@@ -9,9 +9,9 @@ POST {{url}}/users
 Content-Type: application/json
 
 {
-  "firstName": "Mirthe",
-  "lastName": "Lopez",
-  "email": "fabroz.dev@gmail.com"
+  "firstName": "John",
+  "lastName": "Doe",
+  "email": "john.doe@mail.com"
 }
 
 ### edit employee
@@ -19,14 +19,35 @@ PUT {{url}}/users/a664051a-f598-4803-92d6-2e890ade12cb
 Content-Type: application/json
 
 {
-  "firstName": "John",
+  "firstName": "Johnny",
   "lastName": "Doe",
   "email": "john.doe@mail.com"
 }
 
 ### delete employee
 DELETE {{url}}/users/a664051a-f598-4803-92d6-2e890ade12cb
+
+### get locations
+GET {{url}}/locations
+
+### create location
+POST {{url}}/locations
 Content-Type: application/json
+
+{
+  "name": "BSO Test"
+}
+
+### edit location
+PUT {{url}}/locations/5f5b5c65-4d8c-4418-b309-3c4eb5099615
+Content-Type: application/json
+
+{
+  "name": "BSO Test 1"
+}
+
+### delete location
+DELETE {{url}}/locations/5f5b5c65-4d8c-4418-b309-3c4eb5099615
 
 
 
