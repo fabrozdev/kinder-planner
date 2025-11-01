@@ -1,0 +1,14 @@
+spring:
+  application:
+    name: Planning System
+  datasource:
+    url: ${DB_URL}
+    username: ${PG_USER}
+    password: ${PG_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
