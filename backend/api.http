@@ -1,0 +1,32 @@
+### Variables
+@url = http://localhost:8080/api
+
+### get employees
+GET {{url}}/users
+
+### create employees
+POST {{url}}/users
+Content-Type: application/json
+
+{
+  "firstName": "Mirthe",
+  "lastName": "Lopez",
+  "email": "fabroz.dev@gmail.com"
+}
+
+### edit employee
+PUT {{url}}/users/a664051a-f598-4803-92d6-2e890ade12cb
+Content-Type: application/json
+
+{
+  "firstName": "John",
+  "lastName": "Doe",
+  "email": "john.doe@mail.com"
+}
+
+### delete employee
+DELETE {{url}}/users/a664051a-f598-4803-92d6-2e890ade12cb
+Content-Type: application/json
+
+
+

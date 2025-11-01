@@ -1,5 +1,8 @@
 package com.kindercentrum.planner.features.users.controller
 
+import com.kindercentrum.planner.features.users.model.dto.CreateUserDto
+import com.kindercentrum.planner.features.users.model.dto.UpdateUserDto
+import com.kindercentrum.planner.features.users.model.dto.UserDto
 import com.kindercentrum.planner.features.users.model.entity.User
 import com.kindercentrum.planner.features.users.service.UserService
 import org.springframework.http.HttpStatus
@@ -10,16 +13,16 @@ import org.springframework.web.bind.annotation.*
 @RequestMapping("/users")
 class UserController(private val userService: UserService) {
     @GetMapping
-    fun getUsers(): List<User> = userService.getUsers();
+    fun getUsers(): List<UserDto> = userService.getUsers();
 
     @PostMapping
-    fun createUser(@RequestBody user: User): ResponseEntity<User> {
+    fun createUser(@RequestBody user: CreateUserDto): ResponseEntity<UserDto> {
         val result = userService.create(user);
         return ResponseEntity(result, HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
-    fun updateUser(@PathVariable id: String, @RequestBody user: User): ResponseEntity<User> {
+    fun updateUser(@PathVariable id: String, @RequestBody user: UpdateUserDto): ResponseEntity<UserDto> {
         val updatedUser = userService.update(id, user);
         return ResponseEntity(updatedUser, HttpStatus.OK);
     }
@@ -29,7 +32,6 @@ class UserController(private val userService: UserService) {
         userService.delete(id);
         return ResponseEntity(HttpStatus.OK);
     }
-
 }
 
 

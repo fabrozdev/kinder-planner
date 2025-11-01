@@ -1,0 +1,13 @@
+{
+  "Servers": {
+    "1": {
+      "Name": "plannerdb",
+      "Group": "Servers",
+      "Port": 5432,
+      "Username": "postgres",
+      "Host": "plannerdb",
+      "SSLMode": "prefer",
+      "MaintenanceDB": "postgres"
+    }
+  }
+}

@@ -31,7 +31,23 @@ services:
       POSTGRES_DB: postgres
     volumes:
       - pgdata:/var/lib/postgresql/data
+  pgadmin:
+    container_name: pgadmin
+    image: 'dpage/pgadmin4:6.17'
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=admin@admin.admin
+      - PGADMIN_DEFAULT_PASSWORD=admin1234
+    ports:
+      - "65532:80"
+    volumes:
+      - pgadmindata:/var/lib/pgadmin4
+      - ./servers.json:/pgadmin4/servers.json:ro
+    deploy:
+      resources:
+        limits:
+          memory: 512m
 
 volumes:
   pgdata: {}
+  pgadmindata: {}
 

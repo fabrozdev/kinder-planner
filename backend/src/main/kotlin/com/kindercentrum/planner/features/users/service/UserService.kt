@@ -1,6 +1,10 @@
 package com.kindercentrum.planner.features.users.service
 
+import com.kindercentrum.planner.features.users.model.dto.CreateUserDto
+import com.kindercentrum.planner.features.users.model.dto.UpdateUserDto
+import com.kindercentrum.planner.features.users.model.dto.UserDto
 import com.kindercentrum.planner.features.users.model.entity.User
+import com.kindercentrum.planner.features.users.model.mapper.UserMapper
 import com.kindercentrum.planner.features.users.repository.UserRepository
 import org.springframework.stereotype.Service
 import java.time.Instant
@@ -9,24 +13,29 @@ import java.time.Instant
 class UserService(
     private val userRepository: UserRepository,
 ) {
+    fun getUsers(): List<UserDto> = userRepository.findByDeletedAtIsNull().map(UserMapper.INSTANCE::toDto)
 
-    fun getUsers(): List<User> = userRepository.findAll().toList();
+    fun create(userDto: CreateUserDto): UserDto {
+        val user = userRepository.save(User(
+            firstName = userDto.firstName,
+            lastName = userDto.lastName,
+            email = userDto.email,
+        ))
 
-    fun create(user: User): User {
-        return userRepository.save(user);
+        return UserMapper.INSTANCE.toDto(user)
     }
 
-    fun update(id: String, user: User): User {
+    fun update(id: String, user: UpdateUserDto): UserDto {
         val existingUser = userRepository.findByIdAndDeletedAtIsNull(id)
             ?: throw UserNotFoundException("User with id: $id not found")
 
         val updatedUser = existingUser.copy(
-            firstName = user.firstName,
-            lastName = user.lastName,
-            email = user.email,
+            firstName = user.firstName ?: existingUser.firstName,
+            lastName = user.lastName ?: existingUser.lastName,
+            email = user.email ?: existingUser.email,
         )
 
-        return userRepository.save(updatedUser)
+        return UserMapper.INSTANCE.toDto(userRepository.save(updatedUser))
     }
 
     fun delete(id: String): Boolean {
