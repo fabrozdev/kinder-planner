@@ -1,3 +1,3 @@
-<mat-chip>
-  <div>0 / {{ capability?.max }}</div>
+<mat-chip [style.background-color]="count > (capability?.max || 0) ? '#ffebee' : '#e8f5e8'">
+  <div>{{ count }} / {{ capability?.max }}</div>
 </mat-chip>

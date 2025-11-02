@@ -1,7 +1,12 @@
 <div class="min-w-[200px] max-w-[400px]">
   <div class="flex justify-between mb-4">
     <h3 class="text-lg">{{ day.label }}</h3>
-    <app-capability [capability]="day.capability"></app-capability>
+    <app-capability [capability]="day.capability" [count]="day.children.length"></app-capability>
   </div>
   <app-children-autocomplete />
+  <div class="flex flex-col gap-2">
+    @for (child of day.children; track child.id) {
+      <mat-chip style="height: 35px">{{ child.name }}</mat-chip>
+    }
+  </div>
 </div>

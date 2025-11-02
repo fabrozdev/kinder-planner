@@ -1,19 +1,14 @@
 <div class="flex flex-col gap-1 h-full">
-  <header class="flex justify-between items-center">
-    <h1 class="text-4xl">Planner</h1>
-    <div>Logo</div>
-  </header>
-  <div class="flex w-full justify-end">
-    <div class="flex items-center">
-      <button matIconButton aria-label="Example icon button with a vertical three dot icon">
-        <mat-icon>keyboard_arrow_left</mat-icon>
-      </button>
-      <p class="text-lg">November</p>
-      <button matIconButton aria-label="Example icon button with a vertical three dot icon">
-        <mat-icon>keyboard_arrow_right</mat-icon>
-      </button>
+  <app-header />
+  @if (!loading()) {
+    <app-planner-navigator />
+  }
+  @if (loading()) {
+    <app-planner-skeleton />
+  } @else {
+    <div class="schedule-container">
+      <app-schedule [location]="{ name: 'BSO Avontuur' }"></app-schedule>
+      <app-schedule [location]="{ name: 'BSO Huiskamer' }"></app-schedule>
     </div>
-  </div>
-  <app-schedule [location]="{ name: 'BSO Avontuur' }"></app-schedule>
-  <app-schedule [location]="{ name: 'BSO Huiskamer' }"></app-schedule>
+  }
 </div>

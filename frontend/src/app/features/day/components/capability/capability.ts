@@ -11,4 +11,7 @@ export class Capability {
   capability: DayOfWeek['capability'] = {
     max: 0,
   };
+
+  @Input()
+  count: number = 0;
 }
