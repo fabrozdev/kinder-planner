@@ -1,0 +1,8 @@
+<div class="h-full flex-1">
+  <p>schedule works!</p>
+  <div class="flex justify-between">
+    @for (day of daysOfWeek; track day.key) {
+      <app-day [day]="day"></app-day>
+    }
+  </div>
+</div>
