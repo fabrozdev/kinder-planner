@@ -12,18 +12,18 @@ import java.util.*
 @RequestMapping("/planning")
 class PlanningController(private val planningService: PlanningService) {
     @GetMapping
-    fun getPlannings(): List<PlanningDto> = planningService.getPlannings();
+    fun getPlannings(): List<PlanningDto> = planningService.getPlannings()
 
     @PostMapping
     fun createPlanning(@RequestBody planning: CreatePlanningDto): ResponseEntity<PlanningDto> {
-        val result = planningService.create(planning);
-        return ResponseEntity(result, HttpStatus.CREATED);
+        val result = planningService.create(planning)
+        return ResponseEntity(result, HttpStatus.CREATED)
     }
 
     @DeleteMapping("/{id}")
     fun deleteUser(@PathVariable id: UUID): ResponseEntity<Boolean> {
-        planningService.delete(id);
-        return ResponseEntity(HttpStatus.OK);
+        planningService.delete(id)
+        return ResponseEntity(HttpStatus.OK)
     }
 }
 

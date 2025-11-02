@@ -37,7 +37,7 @@ class PlanningService(
 
         val deleteUser = planning.copy(deletedAt = Instant.now())
         planningRepository.save(deleteUser)
-        return true;
+        return true
     }
 }
 

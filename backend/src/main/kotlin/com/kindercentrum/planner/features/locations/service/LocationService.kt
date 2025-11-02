@@ -41,7 +41,7 @@ class LocationService(
 
         val deleteLocation = location.copy(active = false)
         locationRepository.save(deleteLocation)
-        return true;
+        return true
     }
 
     fun verifyLocationAvailability(name: String) {

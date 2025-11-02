@@ -45,7 +45,7 @@ class UserService(
 
         val deleteUser = user.copy(deletedAt = Instant.now())
         userRepository.save(deleteUser)
-        return true;
+        return true
     }
 }
 

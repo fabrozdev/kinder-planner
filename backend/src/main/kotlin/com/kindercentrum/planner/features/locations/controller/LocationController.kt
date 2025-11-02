@@ -12,24 +12,24 @@ import java.util.UUID
 @RequestMapping("/locations")
 class LocationController(private val locationService: LocationService) {
     @GetMapping
-    fun getLocations(): List<LocationDto> = locationService.getLocations();
+    fun getLocations(): List<LocationDto> = locationService.getLocations()
 
     @PostMapping
     fun createLocation(@RequestBody location: CreateLocationDto): ResponseEntity<LocationDto> {
-        val result = locationService.create(location);
-        return ResponseEntity(result, HttpStatus.CREATED);
+        val result = locationService.create(location)
+        return ResponseEntity(result, HttpStatus.CREATED)
     }
 
     @PutMapping("/{id}")
     fun updateLocation(@PathVariable id: UUID, @RequestBody location: CreateLocationDto): ResponseEntity<LocationDto> {
-        val updatedLocation = locationService.update(id, location);
-        return ResponseEntity(updatedLocation, HttpStatus.OK);
+        val updatedLocation = locationService.update(id, location)
+        return ResponseEntity(updatedLocation, HttpStatus.OK)
     }
 
     @DeleteMapping("/{id}")
     fun deleteLocation(@PathVariable id: UUID): ResponseEntity<Boolean> {
-        locationService.delete(id);
-        return ResponseEntity(HttpStatus.OK);
+        locationService.delete(id)
+        return ResponseEntity(HttpStatus.OK)
     }
 }
 
