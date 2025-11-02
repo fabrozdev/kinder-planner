@@ -7,6 +7,7 @@ import com.kindercentrum.planner.features.locations.model.mapper.LocationMapper
 import com.kindercentrum.planner.features.locations.repository.LocationRepository
 import org.springframework.dao.DuplicateKeyException
 import org.springframework.stereotype.Service
+import java.util.UUID
 
 @Service
 class LocationService(
@@ -22,7 +23,7 @@ class LocationService(
         return LocationMapper.INSTANCE.toDto(location)
     }
 
-    fun update(id: String, locationDto: CreateLocationDto): LocationDto {
+    fun update(id: UUID, locationDto: CreateLocationDto): LocationDto {
         val existingLocation = locationRepository.findByIdAndActiveIsTrue(id)
             ?: throw LocationNotFoundException("Location with id: $id not found")
         verifyLocationAvailability(locationDto.name)
@@ -34,7 +35,7 @@ class LocationService(
         return LocationMapper.INSTANCE.toDto(locationRepository.save(updatedLocation))
     }
 
-    fun delete(id: String): Boolean {
+    fun delete(id: UUID): Boolean {
         val location = locationRepository.findByIdAndActiveIsTrue(id)
             ?: throw LocationNotFoundException("Location with id: $id not found")
 

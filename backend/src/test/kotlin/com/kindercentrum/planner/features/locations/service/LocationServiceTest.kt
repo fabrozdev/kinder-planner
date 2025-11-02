@@ -14,9 +14,13 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.assertNotNull
 import org.junit.jupiter.api.assertThrows
 import java.time.Instant
+import java.util.UUID
 import kotlin.test.Test
 
 class LocationServiceTest {
+
+    private val id = UUID.randomUUID()
+
     private val locationRepository = mockk<LocationRepository>()
 
     @InjectMockKs
@@ -31,7 +35,7 @@ class LocationServiceTest {
     fun `should list locations`() {
         val locations = listOf(
             Location(
-                id = "1111-2222-3333-4444",
+                id = id,
                 name = "Test Location",
                 active = true
             )
@@ -52,7 +56,7 @@ class LocationServiceTest {
         every { locationRepository.findByNameAndActiveIsTrue("Test Location") } returns emptyList()
         every { locationRepository.save(any<Location>()) } answers {
             val location = firstArg<Location>()
-            location.copy(id = "generated-uuid-1234")
+            location.copy(id = id)
         }
 
         val result = locationService.create(createDto)
@@ -71,7 +75,7 @@ class LocationServiceTest {
         )
 
         val existingLocation = Location(
-            id = "existing-id",
+            id = id,
             name = "Test Location",
             active = true
         )
@@ -89,9 +93,8 @@ class LocationServiceTest {
 
     @Test
     fun `should update location`() {
-        val locationId = "1111-2222"
         val existingLocation = Location(
-            id = locationId,
+            id = id,
             name = "Test Location",
             active = true
         )
@@ -100,18 +103,18 @@ class LocationServiceTest {
             name = "Test Location 1",
         )
 
-        every { locationRepository.findByIdAndActiveIsTrue(locationId) } returns existingLocation
+        every { locationRepository.findByIdAndActiveIsTrue(id) } returns existingLocation
         every { locationRepository.findByNameAndActiveIsTrue("Test Location 1") } returns emptyList()
         every { locationRepository.save(any<Location>()) } answers {
             val location = firstArg<Location>()
             location.copy(updatedAt = Instant.now())
         }
 
-        val result = locationService.update(locationId, updateDto)
+        val result = locationService.update(id, updateDto)
 
         assertEquals("Test Location 1", result.name)
 
-        verify { locationRepository.findByIdAndActiveIsTrue(locationId) }
+        verify { locationRepository.findByIdAndActiveIsTrue(id) }
         verify { locationRepository.findByNameAndActiveIsTrue("Test Location 1") }
         verify { locationRepository.save(match {
             it.name == "Test Location 1"
@@ -120,34 +123,32 @@ class LocationServiceTest {
 
     @Test
     fun `should throw exception when updating non-existent location`() {
-        val locationId = "1111-2222"
         val updateDto = CreateLocationDto(
             name = "Test Location 1",
         )
 
-        every { locationRepository.findByIdAndActiveIsTrue(locationId) } returns null
+        every { locationRepository.findByIdAndActiveIsTrue(id) } returns null
 
         val exception = assertThrows<LocationNotFoundException> {
-            locationService.update(locationId, updateDto)
+            locationService.update(id, updateDto)
         }
 
-        assertEquals("Location with id: $locationId not found", exception.message)
-        verify { locationRepository.findByIdAndActiveIsTrue(locationId) }
+        assertEquals("Location with id: $id not found", exception.message)
+        verify { locationRepository.findByIdAndActiveIsTrue(id) }
         verify(exactly = 0) { locationRepository.findByNameAndActiveIsTrue(any()) }
         verify(exactly = 0) { locationRepository.save(any()) }
     }
 
     @Test
     fun `should throw exception when updating location with duplicate name`() {
-        val locationId = "1111-2222"
         val existingLocation = Location(
-            id = locationId,
+            id = id,
             name = "Test Location",
             active = true
         )
 
         val duplicateLocation = Location(
-            id = "another-id",
+            id = id,
             name = "Test Location 1",
             active = true
         )
@@ -156,52 +157,50 @@ class LocationServiceTest {
             name = "Test Location 1",
         )
 
-        every { locationRepository.findByIdAndActiveIsTrue(locationId) } returns existingLocation
+        every { locationRepository.findByIdAndActiveIsTrue(id) } returns existingLocation
         every { locationRepository.findByNameAndActiveIsTrue("Test Location 1") } returns listOf(duplicateLocation)
 
         val exception = assertThrows<LocationDuplicateKeyException> {
-            locationService.update(locationId, updateDto)
+            locationService.update(id, updateDto)
         }
 
         assertEquals("Location with name Test Location 1 already exists", exception.message)
-        verify { locationRepository.findByIdAndActiveIsTrue(locationId) }
+        verify { locationRepository.findByIdAndActiveIsTrue(id) }
         verify { locationRepository.findByNameAndActiveIsTrue("Test Location 1") }
         verify(exactly = 0) { locationRepository.save(any()) }
     }
 
     @Test
     fun `should soft delete location`() {
-        val locationId = "1111-2222"
         val location = Location(
-            id = locationId,
+            id = id,
             name = "Test Location",
             active = true
         )
 
-        every { locationRepository.findByIdAndActiveIsTrue(locationId) } returns location
+        every { locationRepository.findByIdAndActiveIsTrue(id) } returns location
         every { locationRepository.save(any<Location>()) } answers {
             firstArg<Location>()
         }
 
-        val result = locationService.delete(locationId)
+        val result = locationService.delete(id)
 
         assertTrue(result)
-        verify { locationRepository.findByIdAndActiveIsTrue(locationId) }
+        verify { locationRepository.findByIdAndActiveIsTrue(id) }
         verify { locationRepository.save(match { it.active == false }) }
     }
 
     @Test
     fun `should throw exception when soft deleting non-existent location`() {
-        val locationId = "1111-2222"
 
-        every { locationRepository.findByIdAndActiveIsTrue(locationId) } returns null
+        every { locationRepository.findByIdAndActiveIsTrue(id) } returns null
 
         val exception = assertThrows<LocationNotFoundException> {
-            locationService.delete(locationId)
+            locationService.delete(id)
         }
 
-        assertEquals("Location with id: $locationId not found", exception.message)
-        verify { locationRepository.findByIdAndActiveIsTrue(locationId) }
+        assertEquals("Location with id: $id not found", exception.message)
+        verify { locationRepository.findByIdAndActiveIsTrue(id) }
         verify(exactly = 0) { locationRepository.save(any()) }
     }
 }

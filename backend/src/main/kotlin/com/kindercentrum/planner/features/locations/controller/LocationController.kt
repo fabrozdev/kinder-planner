@@ -6,6 +6,7 @@ import com.kindercentrum.planner.features.locations.service.LocationService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
+import java.util.UUID
 
 @RestController
 @RequestMapping("/locations")
@@ -20,13 +21,13 @@ class LocationController(private val locationService: LocationService) {
     }
 
     @PutMapping("/{id}")
-    fun updateLocation(@PathVariable id: String, @RequestBody location: CreateLocationDto): ResponseEntity<LocationDto> {
+    fun updateLocation(@PathVariable id: UUID, @RequestBody location: CreateLocationDto): ResponseEntity<LocationDto> {
         val updatedLocation = locationService.update(id, location);
         return ResponseEntity(updatedLocation, HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
-    fun deleteLocation(@PathVariable id: String): ResponseEntity<Boolean> {
+    fun deleteLocation(@PathVariable id: UUID): ResponseEntity<Boolean> {
         locationService.delete(id);
         return ResponseEntity(HttpStatus.OK);
     }
