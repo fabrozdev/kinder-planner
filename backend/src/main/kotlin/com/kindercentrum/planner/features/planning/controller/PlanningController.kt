@@ -21,7 +21,7 @@ class PlanningController(private val planningService: PlanningService) {
     }
 
     @DeleteMapping("/{id}")
-    fun deleteUser(@PathVariable id: UUID): ResponseEntity<Boolean> {
+    fun deletePlanning(@PathVariable id: UUID): ResponseEntity<Boolean> {
         planningService.delete(id)
         return ResponseEntity(HttpStatus.OK)
     }
