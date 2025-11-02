@@ -4,34 +4,35 @@ import com.kindercentrum.planner.features.users.model.dto.CreateUserDto
 import com.kindercentrum.planner.features.users.model.dto.UpdateUserDto
 import com.kindercentrum.planner.features.users.model.entity.User
 import com.kindercentrum.planner.features.users.repository.UserRepository
-import io.mockk.MockKAnnotations
 import io.mockk.every
-import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.mockk
 import io.mockk.verify
-import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertNotNull
 import org.junit.jupiter.api.assertThrows
 import java.time.Instant
+import java.util.*
 
 class UserServiceTest {
     private val userRepository = mockk<UserRepository>()
+    private lateinit var userService: UserService
 
-    @InjectMockKs
-    lateinit var userService: UserService
+    private val testUserId = UUID.fromString("11111111-2222-3333-4444-555555555555")
+    private val generatedUserId = UUID.fromString("aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee")
 
     @BeforeEach
     fun setUp() {
-        MockKAnnotations.init(this)
+        userService = UserService(userRepository)
     }
 
     @Test
     fun `should list users`() {
         val users = listOf(
             User(
-                id = "1111-2222-3333-4444",
+                id = testUserId,
                 firstName = "John",
                 lastName = "Doe",
                 email = "john@example.com",
@@ -39,8 +40,8 @@ class UserServiceTest {
         )
 
         every { userRepository.findByDeletedAtIsNull() } returns users
-        val result = userService.getUsers();
-        assertEquals(1, result.size);
+        val result = userService.getUsers()
+        assertEquals(1, result.size)
     }
 
     @Test
@@ -53,8 +54,7 @@ class UserServiceTest {
 
         every { userRepository.save(any<User>()) } answers {
             val user = firstArg<User>()
-            // Simulate what the database would do - set the ID
-            user.copy(id = "generated-uuid-1234")
+            user.copy(id = generatedUserId)
         }
 
         val result = userService.create(createDto)
@@ -63,15 +63,15 @@ class UserServiceTest {
         assertEquals("Doe", result.lastName)
         assertEquals("john@example.com", result.email)
         assertNotNull(result.id)
+        assertEquals(generatedUserId.toString(), result.id)
 
         verify { userRepository.save(any<User>()) }
     }
 
     @Test
     fun `should update user`() {
-        val userId = "1111-2222"
         val existingUser = User(
-            id = userId,
+            id = testUserId,
             firstName = "John",
             lastName = "Doe",
             email = "john@example.com",
@@ -83,20 +83,19 @@ class UserServiceTest {
             email = "johnny.smith@example.com",
         )
 
-        every { userRepository.findByIdAndDeletedAtIsNull(userId) } returns existingUser
+        every { userRepository.findByIdAndDeletedAtIsNull(testUserId) } returns existingUser
         every { userRepository.save(any<User>()) } answers {
             val user = firstArg<User>()
-            // Simulate what JPA auditing would do - set updatedAt
             user.copy(updatedAt = Instant.now())
         }
 
-        val result = userService.update(userId, updateDto)
+        val result = userService.update(testUserId, updateDto)
 
         assertEquals("Johnny", result.firstName)
         assertEquals("Smith", result.lastName)
         assertEquals("johnny.smith@example.com", result.email)
 
-        verify { userRepository.findByIdAndDeletedAtIsNull(userId) }
+        verify { userRepository.findByIdAndDeletedAtIsNull(testUserId) }
         verify { userRepository.save(match {
             it.firstName == "Johnny" &&
                     it.lastName == "Smith"
@@ -105,9 +104,8 @@ class UserServiceTest {
 
     @Test
     fun `should update user with partial data`() {
-        val userId = "1111-2222"
         val existingUser = User(
-            id = userId,
+            id = testUserId,
             firstName = "John",
             lastName = "Doe",
             email = "john@example.com",
@@ -120,46 +118,44 @@ class UserServiceTest {
             email = null,     // Not updating
         )
 
-        every { userRepository.findByIdAndDeletedAtIsNull(userId) } returns existingUser
+        every { userRepository.findByIdAndDeletedAtIsNull(testUserId) } returns existingUser
         every { userRepository.save(any<User>()) } answers {
             firstArg<User>()
         }
 
-        val result = userService.update(userId, updateDto)
+        val result = userService.update(testUserId, updateDto)
 
         assertEquals("Johnny", result.firstName)
         assertEquals("Doe", result.lastName)  // Should remain unchanged
         assertEquals("john@example.com", result.email)  // Should remain unchanged
 
-        verify { userRepository.findByIdAndDeletedAtIsNull(userId) }
+        verify { userRepository.findByIdAndDeletedAtIsNull(testUserId) }
         verify { userRepository.save(any()) }
     }
 
     @Test
     fun `should throw exception when updating non-existent user`() {
-        val userId = "1111-2222"
         val updateDto = UpdateUserDto(
             firstName = "Johnny",
             lastName = null,
             email = null,
         )
 
-        every { userRepository.findByIdAndDeletedAtIsNull(userId) } returns null
+        every { userRepository.findByIdAndDeletedAtIsNull(testUserId) } returns null
 
         val exception = assertThrows<UserNotFoundException> {
-            userService.update(userId, updateDto)
+            userService.update(testUserId, updateDto)
         }
 
-        assertEquals("User with id: $userId not found", exception.message)
-        verify { userRepository.findByIdAndDeletedAtIsNull(userId) }
+        assertEquals("User with id: $testUserId not found", exception.message)
+        verify { userRepository.findByIdAndDeletedAtIsNull(testUserId) }
         verify(exactly = 0) { userRepository.save(any()) }
     }
 
     @Test
     fun `should soft delete user`() {
-        val userId = "1111-2222"
         val user = User(
-            id = userId,
+            id = testUserId,
             firstName = "John",
             lastName = "Doe",
             email = "john@example.com",
@@ -167,30 +163,28 @@ class UserServiceTest {
             deletedAt = null
         )
 
-        every { userRepository.findByIdAndDeletedAtIsNull(userId) } returns user
+        every { userRepository.findByIdAndDeletedAtIsNull(testUserId) } returns user
         every { userRepository.save(any<User>()) } answers {
             firstArg<User>()
         }
 
-        val result = userService.delete(userId)
+        val result = userService.delete(testUserId)
 
         assertTrue(result)
-        verify { userRepository.findByIdAndDeletedAtIsNull(userId) }
+        verify { userRepository.findByIdAndDeletedAtIsNull(testUserId) }
         verify { userRepository.save(match { it.deletedAt != null }) }
     }
 
     @Test
     fun `should throw exception when soft deleting non-existent user`() {
-        val userId = "1111-2222"
-
-        every { userRepository.findByIdAndDeletedAtIsNull(userId) } returns null
+        every { userRepository.findByIdAndDeletedAtIsNull(testUserId) } returns null
 
         val exception = assertThrows<UserNotFoundException> {
-            userService.delete(userId)
+            userService.delete(testUserId)
         }
 
-        assertEquals("User with id: $userId not found", exception.message)
-        verify { userRepository.findByIdAndDeletedAtIsNull(userId) }
+        assertEquals("User with id: $testUserId not found", exception.message)
+        verify { userRepository.findByIdAndDeletedAtIsNull(testUserId) }
         verify(exactly = 0) { userRepository.save(any()) }
     }
 }

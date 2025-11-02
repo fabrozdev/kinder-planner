@@ -8,6 +8,7 @@ import com.kindercentrum.planner.features.users.service.UserService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
+import java.util.UUID
 
 @RestController
 @RequestMapping("/users")
@@ -22,13 +23,13 @@ class UserController(private val userService: UserService) {
     }
 
     @PutMapping("/{id}")
-    fun updateUser(@PathVariable id: String, @RequestBody user: UpdateUserDto): ResponseEntity<UserDto> {
+    fun updateUser(@PathVariable id: UUID, @RequestBody user: UpdateUserDto): ResponseEntity<UserDto> {
         val updatedUser = userService.update(id, user);
         return ResponseEntity(updatedUser, HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
-    fun deleteUser(@PathVariable id: String): ResponseEntity<Boolean> {
+    fun deleteUser(@PathVariable id: UUID): ResponseEntity<Boolean> {
         userService.delete(id);
         return ResponseEntity(HttpStatus.OK);
     }

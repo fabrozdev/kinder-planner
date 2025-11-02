@@ -8,6 +8,7 @@ import com.kindercentrum.planner.features.users.model.mapper.UserMapper
 import com.kindercentrum.planner.features.users.repository.UserRepository
 import org.springframework.stereotype.Service
 import java.time.Instant
+import java.util.UUID
 
 @Service
 class UserService(
@@ -25,7 +26,7 @@ class UserService(
         return UserMapper.INSTANCE.toDto(user)
     }
 
-    fun update(id: String, user: UpdateUserDto): UserDto {
+    fun update(id: UUID, user: UpdateUserDto): UserDto {
         val existingUser = userRepository.findByIdAndDeletedAtIsNull(id)
             ?: throw UserNotFoundException("User with id: $id not found")
 
@@ -38,7 +39,7 @@ class UserService(
         return UserMapper.INSTANCE.toDto(userRepository.save(updatedUser))
     }
 
-    fun delete(id: String): Boolean {
+    fun delete(id: UUID): Boolean {
         val user = userRepository.findByIdAndDeletedAtIsNull(id)
             ?: throw UserNotFoundException("User with id: $id not found")
 
