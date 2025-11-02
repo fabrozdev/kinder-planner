@@ -6,5 +6,6 @@ import java.util.*
 
 interface PlanningRepository: CrudRepository<Planning, UUID> {
     fun findByYearAndMonthAndDeletedAtIsNull(year: Int, month: Int): Planning?
+    fun findPlanningByYearAndMonthAndDeletedAtIsNull(year: Int, month: Int): List<Planning>
     fun findByIdAndDeletedAtIsNull(id: UUID): Planning?
 }

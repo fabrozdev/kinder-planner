@@ -8,13 +8,22 @@ import com.kindercentrum.planner.features.planning.repository.PlanningRepository
 import org.springframework.dao.DuplicateKeyException
 import org.springframework.stereotype.Service
 import java.time.Instant
+import java.time.LocalDate
 import java.util.UUID
 
 @Service
 class PlanningService(
     private val planningRepository: PlanningRepository,
 ) {
-    fun getPlannings(): List<PlanningDto> = planningRepository.findAll().map(PlanningMapper.INSTANCE::toDto)
+    fun getPlannings(): List<PlanningDto> {
+        val now = LocalDate.now()
+        val currentYear = now.year
+        val currentMonth = now.monthValue
+
+        return planningRepository
+            .findPlanningByYearAndMonthAndDeletedAtIsNull(currentYear, currentMonth)
+            .map(PlanningMapper.INSTANCE::toDto)
+    }
 
     fun create(planningDto: CreatePlanningDto): PlanningDto {
         val existing = planningRepository.findByYearAndMonthAndDeletedAtIsNull(planningDto.year, planningDto.month)

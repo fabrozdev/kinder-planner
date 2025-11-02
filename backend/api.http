@@ -49,6 +49,9 @@ Content-Type: application/json
 ### delete location
 DELETE {{url}}/locations/5f5b5c65-4d8c-4418-b309-3c4eb5099615
 
+### get planning
+GET {{url}}/planning
+
 ### create planning
 POST {{url}}/planning
 Content-Type: application/json
