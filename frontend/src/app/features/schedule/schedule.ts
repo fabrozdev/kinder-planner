@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { Day } from '../day/day';
 
 @Component({
@@ -7,6 +7,8 @@ import { Day } from '../day/day';
   templateUrl: './schedule.html',
 })
 export class Schedule {
+  @Input()
+  location!: { name: string };
   daysOfWeek: DayOfWeek[] = [
     { key: 'MON', label: 'Monday', short: 'Mon', capability: { max: 10 } },
     { key: 'TUE', label: 'Tuesday', short: 'Tue', capability: { max: 10 } },

@@ -1,7 +1,19 @@
-<div class="flex flex-col gap-1 h-full border-1">
+<div class="flex flex-col gap-1 h-full">
   <header class="flex justify-between items-center">
     <h1 class="text-4xl">Planner</h1>
     <div>Logo</div>
   </header>
-  <app-schedule></app-schedule>
+  <div class="flex w-full justify-end">
+    <div class="flex items-center">
+      <button matIconButton aria-label="Example icon button with a vertical three dot icon">
+        <mat-icon>keyboard_arrow_left</mat-icon>
+      </button>
+      <p class="text-lg">November</p>
+      <button matIconButton aria-label="Example icon button with a vertical three dot icon">
+        <mat-icon>keyboard_arrow_right</mat-icon>
+      </button>
+    </div>
+  </div>
+  <app-schedule [location]="{ name: 'BSO Avontuur' }"></app-schedule>
+  <app-schedule [location]="{ name: 'BSO Huiskamer' }"></app-schedule>
 </div>
