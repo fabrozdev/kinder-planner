@@ -49,5 +49,17 @@ Content-Type: application/json
 ### delete location
 DELETE {{url}}/locations/5f5b5c65-4d8c-4418-b309-3c4eb5099615
 
+### create planning
+POST {{url}}/planning
+Content-Type: application/json
+
+{
+  "year": 2025,
+  "month": 11,
+  "label": "Planning 11/2025"
+}
+
+### delete planning
+DELETE {{url}}/planning/c3ad16f7-8334-454f-9889-dc7fa044701e
 
 
