@@ -68,7 +68,7 @@ export class ChildrenAutocomplete implements OnInit {
   }
 
   displayFn(child: Child): string {
-    return child?.firstName ?? '';
+    return child ? `${child?.firstName} ${child?.lastName}` : '';
   }
 
   onOptionSelected(child: Child) {
