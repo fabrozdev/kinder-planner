@@ -65,4 +65,11 @@ Content-Type: application/json
 ### delete planning
 DELETE {{url}}/planning/c3ad16f7-8334-454f-9889-dc7fa044701e
 
+### create child
+POST {{url}}/children
+Content-Type: application/json
 
+{
+  "firstName": "Mirhte",
+  "lastName": "Doe"
+}
