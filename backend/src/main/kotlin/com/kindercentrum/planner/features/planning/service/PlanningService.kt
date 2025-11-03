@@ -15,14 +15,13 @@ import java.util.UUID
 class PlanningService(
     private val planningRepository: PlanningRepository,
 ) {
-    fun getPlannings(): List<PlanningDto> {
+    fun getPlanning(): PlanningDto {
         val now = LocalDate.now()
         val currentYear = now.year
         val currentMonth = now.monthValue
 
-        return planningRepository
-            .findPlanningByYearAndMonthAndDeletedAtIsNull(currentYear, currentMonth)
-            .map(PlanningMapper.INSTANCE::toDto)
+        return PlanningMapper.INSTANCE.toDto(planningRepository
+            .findPlanningByYearAndMonthAndDeletedAtIsNull(currentYear, currentMonth))
     }
 
     fun create(planningDto: CreatePlanningDto): PlanningDto {

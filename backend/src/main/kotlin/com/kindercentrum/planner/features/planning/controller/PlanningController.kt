@@ -12,7 +12,7 @@ import java.util.*
 @RequestMapping("/planning")
 class PlanningController(private val planningService: PlanningService) {
     @GetMapping
-    fun getPlanning(): List<PlanningDto> = planningService.getPlannings()
+    fun getPlanning(): PlanningDto = planningService.getPlanning()
 
     @PostMapping
     fun createPlanning(@RequestBody planning: CreatePlanningDto): ResponseEntity<PlanningDto> {
