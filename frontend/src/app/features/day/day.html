@@ -3,10 +3,20 @@
     <h3 class="text-lg">{{ day.label }}</h3>
     <app-capability [capability]="day.capability" [count]="day.children.length"></app-capability>
   </div>
-  <app-children-autocomplete />
+  <app-children-autocomplete
+    [locationId]="locationId"
+    [planningId]="planningId"
+    [dayOfWeek]="dayOfWeek"
+    (assignmentCreated)="onAssignmentCreated($event)"
+  />
   <div class="flex flex-col gap-2">
     @for (child of day.children; track child.id) {
-      <mat-chip style="height: 35px">{{ child.name }}</mat-chip>
+      <mat-chip style="height: 35px">
+        {{ child.name }}
+        <button matChipRemove>
+          <mat-icon>delete</mat-icon>
+        </button>
+      </mat-chip>
     }
   </div>
 </div>
