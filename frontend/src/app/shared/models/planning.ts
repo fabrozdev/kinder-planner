@@ -1,4 +1,4 @@
-interface Planning {
+export interface Planning {
   id: string;
   year: number;
   month: number;

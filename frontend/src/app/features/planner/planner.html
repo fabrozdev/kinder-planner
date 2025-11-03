@@ -5,10 +5,11 @@
   }
   @if (loading()) {
     <app-planner-skeleton />
-  } @else {
+  } @else if (planning()) {
     <div class="schedule-container">
-      <app-schedule [location]="{ name: 'BSO Avontuur' }"></app-schedule>
-      <app-schedule [location]="{ name: 'BSO Huiskamer' }"></app-schedule>
+      @for (location of locations(); track location.id) {
+        <app-schedule [location]="location" [planning]="planning()!"></app-schedule>
+      }
     </div>
   }
 </div>
