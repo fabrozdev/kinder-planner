@@ -90,6 +90,7 @@ export class Schedule implements OnInit {
       day.children.push({
         id: child.id,
         name: `${child.firstName} ${child.lastName}`,
+        assignmentId: assignment.id,
       });
     }
 
@@ -125,9 +126,22 @@ export class Schedule implements OnInit {
     day.children.push({
       id: child.id,
       name: `${child.firstName} ${child.lastName}`,
+      assignmentId: assignment.id,
     });
 
     // Re-sort children by name
     day.children.sort((a, b) => a.name.localeCompare(b.name));
+  }
+
+  onAssignmentDeleted(assignmentId: string) {
+    // Find the day containing the assignment
+    for (const day of this.daysOfWeek) {
+      const childIndex = day.children.findIndex((c) => c.assignmentId === assignmentId);
+      if (childIndex !== -1) {
+        // Remove the child from the day
+        day.children.splice(childIndex, 1);
+        break;
+      }
+    }
   }
 }
