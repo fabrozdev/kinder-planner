@@ -12,7 +12,7 @@
   <div class="flex flex-col gap-2">
     @for (child of day.children; track child.id) {
       <mat-chip style="height: 35px">
-        {{ child.name }}
+        {{ child.name }} - {{ child.group }}
         <button matChipRemove (click)="onRemoveChild(child.assignmentId)">
           <mat-icon>delete</mat-icon>
         </button>

@@ -24,7 +24,7 @@ export class Day {
   private readonly assignmentService = inject(AssignmentService);
 
   @Input() day!: DayOfWeek;
-  @Input() children: { id: string; name: string }[] = [];
+  @Input() children: { id: string; name: string; group: string }[] = [];
   @Input() locationId!: string;
   @Input() planningId!: string;
 

@@ -90,6 +90,7 @@ export class Schedule implements OnInit {
       day.children.push({
         id: child.id,
         name: `${child.firstName} ${child.lastName}`,
+        group: child.group,
         assignmentId: assignment.id,
       });
     }
@@ -127,6 +128,7 @@ export class Schedule implements OnInit {
       id: child.id,
       name: `${child.firstName} ${child.lastName}`,
       assignmentId: assignment.id,
+      group: child.group,
     });
 
     // Re-sort children by name
