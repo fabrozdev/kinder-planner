@@ -5,11 +5,11 @@ import { MatAutocomplete, MatAutocompleteTrigger, MatOption } from '@angular/mat
 import { AsyncPipe } from '@angular/common';
 import { map, Observable, startWith } from 'rxjs';
 import { MatIcon } from '@angular/material/icon';
-import { Child } from '../../../../shared/models/child';
-import { ChildrenService } from '../../../../services/children.service';
-import { AssignmentService } from '../../../../services/assignment.service';
-import { CreateAssignmentDto } from '../../../../shared/models/dto/create-assignment-dto';
-import { Assignment } from '../../../../shared/models/assignment';
+import { Child } from '@/app/shared/models/child';
+import { ChildrenService } from '@/app/services/children.service';
+import { AssignmentService } from '@/app/services/assignment.service';
+import { CreateAssignmentDto } from '@/app/shared/models/dto/create-assignment-dto';
+import { Assignment } from '@/app/shared/models/assignment';
 
 @Component({
   selector: 'app-children-autocomplete',

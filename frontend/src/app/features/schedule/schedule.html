@@ -1,16 +1,34 @@
 @if (location && planning) {
-  <div class="h-full flex-1 gap-3 flex flex-col">
-    <h3 class="text-3xl font-medium">{{ location.name }}</h3>
-    <div class="flex justify-between">
-      @for (day of daysOfWeek; track day.key) {
-        <app-day
-          [day]="day"
-          [locationId]="location.id"
-          [planningId]="planning.id"
-          (assignmentCreated)="onAssignmentCreated($event)"
-          (assignmentDeleted)="onAssignmentDeleted($event)"
-        ></app-day>
-      }
-    </div>
-  </div>
+  <mat-card appearance="outlined">
+    <mat-card-header>
+      <div class="flex justify-between w-full">
+        <mat-card-title>
+          <h3 class="text-3xl font-medium">{{ location.name }}</h3>
+        </mat-card-title>
+        <div class="flex gap-2">
+          <button matIconButton>
+            <mat-icon>edit</mat-icon>
+          </button>
+          <button matIconButton>
+            <mat-icon>content_copy</mat-icon>
+          </button>
+        </div>
+      </div>
+    </mat-card-header>
+    <mat-card-content class="overflow-x-scroll">
+      <div class="h-full flex-1 gap-3 flex flex-col mt-2 !pr-6">
+        <div class="flex justify-between">
+          @for (day of daysOfWeek; track day.key) {
+            <app-day
+              [day]="day"
+              [locationId]="location.id"
+              [planningId]="planning.id"
+              (assignmentCreated)="onAssignmentCreated($event)"
+              (assignmentDeleted)="onAssignmentDeleted($event)"
+            ></app-day>
+          }
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
 }

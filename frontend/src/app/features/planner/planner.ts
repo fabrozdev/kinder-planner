@@ -1,13 +1,13 @@
 import { Component, inject, signal } from '@angular/core';
-import { Schedule } from '../schedule/schedule';
-import { PlannerSkeleton } from './components/planner-skeleton/planner-skeleton';
-import { PlannerNavigator } from './components/planner-navigator/planner-navigator';
-import { Header } from '../../components/header/header';
-import { PlannerService } from '../../services/planner.service';
-import { Planning } from '../../shared/models/planning';
 import { concatMap, tap } from 'rxjs';
-import { LocationService } from '../../services/location.service';
-import { Location } from '../../shared/models/location';
+import { Schedule } from '@/app/features/schedule/schedule';
+import { LocationService } from '@/app/services/location.service';
+import { Planning } from '@/app/shared/models/planning';
+import { PlannerService } from '@/app/services/planner.service';
+import { PlannerSkeleton } from '@/app/features/planner/components/planner-skeleton/planner-skeleton';
+import { PlannerNavigator } from '@/app/features/planner/components/planner-navigator/planner-navigator';
+import { Header } from '@/app/components/header/header';
+import { Location } from '@/app/shared/models/location';
 
 @Component({
   selector: 'app-planner',

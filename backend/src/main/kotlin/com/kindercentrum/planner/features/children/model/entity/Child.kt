@@ -9,13 +9,17 @@ import java.util.*
 
 @Entity
 @EntityListeners(AuditingEntityListener::class)
-@Table(name = "children")
+@Table(
+    name = "children"
+)
 data class Child(
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     val id: UUID? = null,
     val firstName: String,
     val lastName: String,
+    @Column(name = "\"group\"")
+    val group: String,
     @CreatedDate
     @Column(nullable = false, updatable = false)
     var createdAt: Instant? = null,

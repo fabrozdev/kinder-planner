@@ -73,3 +73,14 @@ Content-Type: application/json
   "firstName": "Mirhte",
   "lastName": "Doe"
 }
+
+### import children
+POST {{url}}/children/import
+Content-Type: multipart/form-data; boundary=WebAppBoundary
+
+--WebAppBoundary
+Content-Disposition: form-data; name="file"; filename="children.csv"
+
+< /Users/fabrizzio.maya-lopez/workspace/personal/docs/Kinder Centrum Doen.csv
+--WebAppBoundary--
+

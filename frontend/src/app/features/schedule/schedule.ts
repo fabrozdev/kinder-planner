@@ -1,16 +1,19 @@
 import { Component, inject, Input, OnInit, signal } from '@angular/core';
-import { Day } from '../day/day';
-import { Location } from '../../shared/models/location';
-import { Assignment } from '../../shared/models/assignment';
-import { AssignmentService } from '../../services/assignment.service';
-import { Planning } from '../../shared/models/planning';
-import { ChildrenService } from '../../services/children.service';
-import { Child } from '../../shared/models/child';
 import { concatMap, tap } from 'rxjs';
+import { AssignmentService } from '@/app/services/assignment.service';
+import { ChildrenService } from '@/app/services/children.service';
+import { Planning } from '@/app/shared/models/planning';
+import { Assignment } from '@/app/shared/models/assignment';
+import { Child } from '@/app/shared/models/child';
+import { Day } from '@/app/features/day/day';
+import { Location } from '@/app/shared/models/location';
+import { MatCard, MatCardContent, MatCardHeader, MatCardTitle } from '@angular/material/card';
+import { MatIconButton } from '@angular/material/button';
+import { MatIcon } from '@angular/material/icon';
 
 @Component({
   selector: 'app-schedule',
-  imports: [Day],
+  imports: [Day, MatCard, MatCardHeader, MatCardTitle, MatCardContent, MatIcon, MatIconButton],
   templateUrl: './schedule.html',
 })
 export class Schedule implements OnInit {
@@ -90,6 +93,7 @@ export class Schedule implements OnInit {
       day.children.push({
         id: child.id,
         name: `${child.firstName} ${child.lastName}`,
+        group: child.group,
         assignmentId: assignment.id,
       });
     }
@@ -127,6 +131,7 @@ export class Schedule implements OnInit {
       id: child.id,
       name: `${child.firstName} ${child.lastName}`,
       assignmentId: assignment.id,
+      group: child.group,
     });
 
     // Re-sort children by name

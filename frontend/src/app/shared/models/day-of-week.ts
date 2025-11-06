@@ -5,5 +5,5 @@ interface DayOfWeek {
   capability?: {
     max: number;
   };
-  children: { id: string; name: string; assignmentId: string }[];
+  children: { id: string; name: string; assignmentId: string; group: string }[];
 }
