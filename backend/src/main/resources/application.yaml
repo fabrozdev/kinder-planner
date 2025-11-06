@@ -11,7 +11,12 @@ spring:
       ddl-auto: update
     properties:
       hibernate:
+        jdbc:
+          batch_size: 50
         dialect: org.hibernate.dialect.PostgreSQLDialect
+        order_inserts: true
+
+
 server:
   servlet:
     context-path: /api

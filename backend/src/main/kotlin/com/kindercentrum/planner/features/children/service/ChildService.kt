@@ -33,13 +33,19 @@ class ChildService(
         return ChildMapper.INSTANCE.toDto(child)
     }
 
-    fun importChildren(file: MultipartFile): Boolean {
+    @CacheEvict("children", allEntries = true)
+    fun importChildren(file: MultipartFile): Int {
         val importProcessor = ImportProcessor(CsvImportStrategy())
-        val children = importProcessor.read(file.inputStream);
-        children.forEach {
-            println("Importing ${it.firstName} ${it.lastName}")
+        val childrenDtos = importProcessor.read(file.inputStream)
+
+        val childrenEntities = childrenDtos.map { dto ->
+            Child(
+                firstName = dto.firstName,
+                lastName = dto.lastName
+            )
         }
 
-        return true;
+        val savedChildren = childRepository.saveAll(childrenEntities)
+        return savedChildren.count()
     }
 }

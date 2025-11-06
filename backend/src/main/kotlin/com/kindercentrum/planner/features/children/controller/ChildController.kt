@@ -26,7 +26,7 @@ class ChildController(private val childService: ChildService) {
     }
 
     @PostMapping("/import")
-    fun uploadFile(@RequestParam("file") file: MultipartFile): ResponseEntity<Boolean> {
+    fun uploadFile(@RequestParam("file") file: MultipartFile): ResponseEntity<Int> {
         return ResponseEntity(childService.importChildren(file), HttpStatus.OK);
     }
 }

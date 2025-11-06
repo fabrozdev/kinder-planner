@@ -7,7 +7,7 @@ import java.io.InputStream
 class CsvImportStrategy : ImportStrategy<InputStream, List<CreateChildDto>> {
     override fun read(data: InputStream): List<CreateChildDto> {
         val reader = data.bufferedReader()
-        //val header = reader.readLine()
+        reader.readLine()
         return reader.lineSequence()
             .filter { it.isNotBlank() }
             .map {
