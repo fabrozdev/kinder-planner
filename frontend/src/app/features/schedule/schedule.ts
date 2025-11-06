@@ -7,10 +7,13 @@ import { Assignment } from '@/app/shared/models/assignment';
 import { Child } from '@/app/shared/models/child';
 import { Day } from '@/app/features/day/day';
 import { Location } from '@/app/shared/models/location';
+import { MatCard, MatCardContent, MatCardHeader, MatCardTitle } from '@angular/material/card';
+import { MatIconButton } from '@angular/material/button';
+import { MatIcon } from '@angular/material/icon';
 
 @Component({
   selector: 'app-schedule',
-  imports: [Day],
+  imports: [Day, MatCard, MatCardHeader, MatCardTitle, MatCardContent, MatIcon, MatIconButton],
   templateUrl: './schedule.html',
 })
 export class Schedule implements OnInit {
