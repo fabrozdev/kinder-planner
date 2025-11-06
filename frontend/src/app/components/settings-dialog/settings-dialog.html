@@ -1,0 +1,28 @@
+<h2 mat-dialog-title>Settings</h2>
+<mat-dialog-content class="min-w-[500px] min-h-[200px]">
+  <div class="mb-2">
+    <div class="flex justify-between items-center gap-4">
+      <div>
+        <h3 class="text-lg text-black">Import</h3>
+        <p>Children data (e.g. Firstname, Lastname, Group)</p>
+      </div>
+      <input
+        #fileInput
+        type="file"
+        accept=".csv"
+        style="display: none"
+        (change)="onFileSelected($event)"
+      />
+      <button matIconButton (click)="fileInput.click()">
+        <mat-icon>upload</mat-icon>
+      </button>
+    </div>
+    @if (fileName()) {
+      <p class="underline underlined-offset-1">{{ fileName() }}</p>
+    }
+  </div>
+  <mat-divider></mat-divider>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button matButton mat-dialog-close>Close</button>
+</mat-dialog-actions>
