@@ -4,4 +4,5 @@ data class ChildDto(
     val id: String,
     val firstName: String,
     val lastName: String,
+    val group: String
 )

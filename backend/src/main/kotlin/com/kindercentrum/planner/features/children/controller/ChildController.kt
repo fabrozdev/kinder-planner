@@ -2,6 +2,7 @@ package com.kindercentrum.planner.features.children.controller
 
 import com.kindercentrum.planner.features.children.model.dto.ChildDto
 import com.kindercentrum.planner.features.children.model.dto.CreateChildDto
+import com.kindercentrum.planner.features.children.model.dto.ImportChildrenResultDto
 import com.kindercentrum.planner.features.children.service.ChildService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -26,7 +27,7 @@ class ChildController(private val childService: ChildService) {
     }
 
     @PostMapping("/import")
-    fun uploadFile(@RequestParam("file") file: MultipartFile): ResponseEntity<Int> {
+    fun uploadFile(@RequestParam("file") file: MultipartFile): ResponseEntity<ImportChildrenResultDto> {
         return ResponseEntity(childService.importChildren(file), HttpStatus.OK);
     }
 }

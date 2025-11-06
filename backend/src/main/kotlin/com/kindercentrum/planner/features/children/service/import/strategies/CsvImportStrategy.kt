@@ -11,8 +11,8 @@ class CsvImportStrategy : ImportStrategy<InputStream, List<CreateChildDto>> {
         return reader.lineSequence()
             .filter { it.isNotBlank() }
             .map {
-                val (firstName, lastName) = it.split(',', ignoreCase = false, limit = 2)
-               CreateChildDto(firstName, lastName);
+                val (firstName, lastName, group) = it.split(',', ignoreCase = false, limit = 3)
+               CreateChildDto(firstName, lastName, group);
             }.toList()
     }
 }
