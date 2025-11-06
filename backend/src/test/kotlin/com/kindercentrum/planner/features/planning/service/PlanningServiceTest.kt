@@ -28,31 +28,22 @@ class PlanningServiceTest {
 
     @Test
     fun `should list all plannings`() {
-        val plannings = listOf(
-            Planning(
-                id = testPlanningId,
-                year = 2025,
-                month = 1,
-                label = "January 2025"
-            ),
-            Planning(
-                id = generatedPlanningId,
-                year = 2025,
-                month = 2,
-                label = "February 2025"
-            )
+        val planning = Planning(
+            id = testPlanningId,
+            year = 2025,
+            month = 1,
+            label = "January 2025"
         )
 
-        every { planningRepository.findAll() } returns plannings
+        every { planningRepository.findPlanningByYearAndMonthAndDeletedAtIsNull(any(), any()) } returns planning
 
-        val result = planningService.getPlannings()
+        val result = planningService.getPlanning()
 
-        assertEquals(2, result.size)
-        assertEquals(2025, result[0].year)
-        assertEquals(1, result[0].month)
-        assertEquals("January 2025", result[0].label)
+        assertEquals(2025, result.year)
+        assertEquals(1, result.month)
+        assertEquals("January 2025", result.label)
 
-        verify { planningRepository.findAll() }
+        verify { planningRepository.findPlanningByYearAndMonthAndDeletedAtIsNull(any(), any()) }
     }
 
     @Test
