@@ -1,5 +1,5 @@
 ### Variables
-@url = http://localhost:8080/api
+@url = http://localhost:8081/api
 
 ### get employees
 GET {{url}}/users
@@ -73,3 +73,14 @@ Content-Type: application/json
   "firstName": "Mirhte",
   "lastName": "Doe"
 }
+
+### import children
+POST {{url}}/children/import
+Content-Type: multipart/form-data; boundary=WebAppBoundary
+
+--WebAppBoundary
+Content-Disposition: form-data; name="file"; filename="children.csv"
+
+< /Users/fabrizzio.maya-lopez/Downloads/Book1.csv
+--WebAppBoundary--
+
