@@ -1,8 +1,8 @@
 import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { Assignment } from '../shared/models/assignment';
-import { CreateAssignmentDto } from '../shared/models/dto/create-assignment-dto';
+import { Assignment } from '@/app/shared/models/assignment';
+import { CreateAssignmentDto } from '@/app/shared/models/dto/create-assignment-dto';
 
 @Injectable({
   providedIn: 'root',

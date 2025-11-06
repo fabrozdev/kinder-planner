@@ -1,12 +1,12 @@
 import { Component, inject, Input, OnInit, signal } from '@angular/core';
-import { Day } from '../day/day';
-import { Location } from '../../shared/models/location';
-import { Assignment } from '../../shared/models/assignment';
-import { AssignmentService } from '../../services/assignment.service';
-import { Planning } from '../../shared/models/planning';
-import { ChildrenService } from '../../services/children.service';
-import { Child } from '../../shared/models/child';
 import { concatMap, tap } from 'rxjs';
+import { AssignmentService } from '@/app/services/assignment.service';
+import { ChildrenService } from '@/app/services/children.service';
+import { Planning } from '@/app/shared/models/planning';
+import { Assignment } from '@/app/shared/models/assignment';
+import { Child } from '@/app/shared/models/child';
+import { Day } from '@/app/features/day/day';
+import { Location } from '@/app/shared/models/location';
 
 @Component({
   selector: 'app-schedule',

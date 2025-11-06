@@ -1,8 +1,8 @@
 import { Component, inject } from '@angular/core';
 import { MatIcon } from '@angular/material/icon';
 import { MatIconButton } from '@angular/material/button';
-import { SettingsDialog } from '../settings-dialog/settings-dialog';
 import { MatDialog } from '@angular/material/dialog';
+import { SettingsDialog } from '@/app/components/settings-dialog/settings-dialog';
 
 @Component({
   selector: 'app-header',

@@ -1,11 +1,11 @@
 import { Component, EventEmitter, inject, Input, Output } from '@angular/core';
-import { Capability } from './components/capability/capability';
+import { Capability } from '@/app/features/day/components/capability/capability';
 import { ReactiveFormsModule } from '@angular/forms';
-import { ChildrenAutocomplete } from './components/children-autocomplete/children-autocomplete';
+import { ChildrenAutocomplete } from '@/app/features/day/components/children-autocomplete/children-autocomplete';
 import { MatChip, MatChipRemove } from '@angular/material/chips';
-import { Assignment } from '../../shared/models/assignment';
+import { Assignment } from '@/app/shared/models/assignment';
 import { MatIcon } from '@angular/material/icon';
-import { AssignmentService } from '../../services/assignment.service';
+import { AssignmentService } from '@/app/services/assignment.service';
 
 const DAY_OF_WEEK_MAP: Record<string, number> = {
   MON: 0,
