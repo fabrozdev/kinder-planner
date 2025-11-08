@@ -5,13 +5,12 @@ import { LocationService } from '@/app/services/location.service';
 import { Planning } from '@/app/shared/models/planning';
 import { PlannerService } from '@/app/services/planner.service';
 import { PlannerSkeleton } from '@/app/features/planner/components/planner-skeleton/planner-skeleton';
-import { PlannerNavigator } from '@/app/features/planner/components/planner-navigator/planner-navigator';
 import { Header } from '@/app/components/header/header';
 import { Location } from '@/app/shared/models/location';
 
 @Component({
   selector: 'app-planner',
-  imports: [Schedule, PlannerSkeleton, PlannerNavigator, Header],
+  imports: [Schedule, PlannerSkeleton, Header],
   templateUrl: './planner.html',
 })
 export class Planner {

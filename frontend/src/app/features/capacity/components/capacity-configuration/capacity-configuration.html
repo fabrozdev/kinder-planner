@@ -1,0 +1,17 @@
+<div class="flex flex-col gap-2">
+  @for (day of daysOfWeek(); track day.key) {
+    <div class="flex justify-between">
+      <p class="text-lg">{{ day.label }}</p>
+      <div class="flex items-center gap-2">
+        <button matIconButton (click)="remove(day.key)">
+          <mat-icon>remove</mat-icon>
+        </button>
+        <p>{{ day.capability?.max ?? 0 }}</p>
+        <button matIconButton (click)="add(day.key)">
+          <mat-icon>add</mat-icon>
+        </button>
+      </div>
+    </div>
+    <mat-divider />
+  }
+</div>
