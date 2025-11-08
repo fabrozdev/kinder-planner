@@ -52,6 +52,9 @@ DELETE {{url}}/locations/5f5b5c65-4d8c-4418-b309-3c4eb5099615
 ### get planning
 GET {{url}}/planning
 
+### get planning by month year and locationId
+GET {{url}}/planning/11/2025/1bfa2db4-4943-4df7-ace7-1174cc78cbc5
+
 ### create planning
 POST {{url}}/planning
 Content-Type: application/json
@@ -70,8 +73,9 @@ POST {{url}}/children
 Content-Type: application/json
 
 {
-  "firstName": "Mirhte",
-  "lastName": "Doe"
+  "firstName": "Mirthe",
+  "lastName": "Doe",
+  "group": ""
 }
 
 ### import children
