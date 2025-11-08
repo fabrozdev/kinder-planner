@@ -3,7 +3,7 @@
   @if (loading()) {
     <app-planner-skeleton />
   } @else if (planning()) {
-    <div class="schedule-container mt-2">
+    <div class="schedule-container mt-2 flex flex-col gap-4">
       @for (location of locations(); track location.id) {
         <app-schedule [location]="location" [planning]="planning()!"></app-schedule>
       }

@@ -10,10 +10,20 @@ import { Location } from '@/app/shared/models/location';
 import { MatCard, MatCardContent, MatCardHeader, MatCardTitle } from '@angular/material/card';
 import { MatIconButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
+import { Capacity } from '@/app/features/capacity/capacity';
 
 @Component({
   selector: 'app-schedule',
-  imports: [Day, MatCard, MatCardHeader, MatCardTitle, MatCardContent, MatIcon, MatIconButton],
+  imports: [
+    Day,
+    MatCard,
+    MatCardHeader,
+    MatCardTitle,
+    MatCardContent,
+    MatIcon,
+    MatIconButton,
+    Capacity,
+  ],
   templateUrl: './schedule.html',
 })
 export class Schedule implements OnInit {
