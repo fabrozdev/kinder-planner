@@ -1,8 +1,10 @@
 package com.kindercentrum.planner.features.planning.service
 
+import com.kindercentrum.planner.features.assignments.service.AssignmentService
 import com.kindercentrum.planner.features.planning.mapper.PlanningMapper
 import com.kindercentrum.planner.features.planning.model.dto.CreatePlanningDto
 import com.kindercentrum.planner.features.planning.model.dto.PlanningDto
+import com.kindercentrum.planner.features.planning.model.dto.PlanningWithAssignmentDto
 import com.kindercentrum.planner.features.planning.model.entity.Planning
 import com.kindercentrum.planner.features.planning.repository.PlanningRepository
 import org.springframework.dao.DuplicateKeyException
@@ -14,6 +16,7 @@ import java.util.UUID
 @Service
 class PlanningService(
     private val planningRepository: PlanningRepository,
+    private val assignmentService: AssignmentService,
 ) {
     fun getPlanning(): PlanningDto {
         val now = LocalDate.now()
@@ -22,6 +25,23 @@ class PlanningService(
 
         return PlanningMapper.INSTANCE.toDto(planningRepository
             .findPlanningByYearAndMonthAndDeletedAtIsNull(currentYear, currentMonth))
+    }
+
+    fun getPlanningByMonthAndYearAndLocationId(month: Int, year: Int, locationId: UUID): PlanningWithAssignmentDto {
+        val planning = planningRepository.findPlanningByYearAndMonthAndDeletedAtIsNull(year, month);
+        val planningId = planning.id ?: throw IllegalStateException("Planning should have an ID")
+
+        val assignments = assignmentService.getAssignmentsByPlanningIdAndLocationId(planningId, locationId)
+
+        val planningDto = PlanningMapper.INSTANCE.toDto(planning)
+
+        return PlanningWithAssignmentDto(
+            id = planningDto.id,
+            year = planningDto.year,
+            month = planningDto.month,
+            label = planningDto.label,
+            assignments = assignments
+        )
     }
 
     fun create(planningDto: CreatePlanningDto): PlanningDto {

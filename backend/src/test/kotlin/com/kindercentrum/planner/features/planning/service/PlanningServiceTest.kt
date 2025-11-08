@@ -1,5 +1,7 @@
 package com.kindercentrum.planner.features.planning.service
 
+import com.kindercentrum.planner.features.assignments.model.dto.AssignmentDto
+import com.kindercentrum.planner.features.assignments.service.AssignmentService
 import com.kindercentrum.planner.features.planning.model.dto.CreatePlanningDto
 import com.kindercentrum.planner.features.planning.model.entity.Planning
 import com.kindercentrum.planner.features.planning.repository.PlanningRepository
@@ -16,14 +18,16 @@ import kotlin.test.Test
 
 class PlanningServiceTest {
     private val planningRepository = mockk<PlanningRepository>()
+    private val assignmentService = mockk<AssignmentService>()
     private lateinit var planningService: PlanningService
 
     private val testPlanningId = UUID.fromString("11111111-2222-3333-4444-555555555555")
     private val generatedPlanningId = UUID.fromString("aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee")
+    private val testLocationId = UUID.fromString("22222222-3333-4444-5555-666666666666")
 
     @BeforeEach
     fun setUp() {
-        planningService = PlanningService(planningRepository)
+        planningService = PlanningService(planningRepository, assignmentService)
     }
 
     @Test
@@ -168,5 +172,93 @@ class PlanningServiceTest {
         assertEquals("Planning with id: $testPlanningId not found", exception.message)
         verify { planningRepository.findByIdAndDeletedAtIsNull(testPlanningId) }
         verify(exactly = 0) { planningRepository.save(any()) }
+    }
+
+    @Test
+    fun `should get planning by month, year and location with assignments`() {
+        val planning = Planning(
+            id = testPlanningId,
+            year = 2025,
+            month = 6,
+            label = "June 2025"
+        )
+
+        val assignments = listOf(
+            AssignmentDto(
+                id = UUID.randomUUID().toString(),
+                locationId = testLocationId.toString(),
+                dayOfWeek = 1,
+                childId = UUID.randomUUID().toString(),
+                planningId = testPlanningId.toString(),
+                note = "Test assignment 1"
+            ),
+            AssignmentDto(
+                id = UUID.randomUUID().toString(),
+                locationId = testLocationId.toString(),
+                dayOfWeek = 2,
+                childId = UUID.randomUUID().toString(),
+                planningId = testPlanningId.toString(),
+                note = "Test assignment 2"
+            )
+        )
+
+        every { planningRepository.findPlanningByYearAndMonthAndDeletedAtIsNull(2025, 6) } returns planning
+        every { assignmentService.getAssignmentsByPlanningIdAndLocationId(testPlanningId, testLocationId) } returns assignments
+
+        val result = planningService.getPlanningByMonthAndYearAndLocationId(6, 2025, testLocationId)
+
+        assertEquals(testPlanningId.toString(), result.id)
+        assertEquals(2025, result.year)
+        assertEquals(6, result.month)
+        assertEquals("June 2025", result.label)
+        assertEquals(2, result.assignments.size)
+        assertEquals(assignments, result.assignments)
+
+        verify { planningRepository.findPlanningByYearAndMonthAndDeletedAtIsNull(2025, 6) }
+        verify { assignmentService.getAssignmentsByPlanningIdAndLocationId(testPlanningId, testLocationId) }
+    }
+
+    @Test
+    fun `should get planning with empty assignments list`() {
+        val planning = Planning(
+            id = testPlanningId,
+            year = 2025,
+            month = 7,
+            label = "July 2025"
+        )
+
+        every { planningRepository.findPlanningByYearAndMonthAndDeletedAtIsNull(2025, 7) } returns planning
+        every { assignmentService.getAssignmentsByPlanningIdAndLocationId(testPlanningId, testLocationId) } returns emptyList()
+
+        val result = planningService.getPlanningByMonthAndYearAndLocationId(7, 2025, testLocationId)
+
+        assertEquals(testPlanningId.toString(), result.id)
+        assertEquals(2025, result.year)
+        assertEquals(7, result.month)
+        assertEquals("July 2025", result.label)
+        assertEquals(0, result.assignments.size)
+
+        verify { planningRepository.findPlanningByYearAndMonthAndDeletedAtIsNull(2025, 7) }
+        verify { assignmentService.getAssignmentsByPlanningIdAndLocationId(testPlanningId, testLocationId) }
+    }
+
+    @Test
+    fun `should throw IllegalStateException when planning id is null`() {
+        val planning = Planning(
+            id = null,  // ID is null
+            year = 2025,
+            month = 8,
+            label = "August 2025"
+        )
+
+        every { planningRepository.findPlanningByYearAndMonthAndDeletedAtIsNull(2025, 8) } returns planning
+
+        val exception = assertThrows<IllegalStateException> {
+            planningService.getPlanningByMonthAndYearAndLocationId(8, 2025, testLocationId)
+        }
+
+        assertEquals("Planning should have an ID", exception.message)
+        verify { planningRepository.findPlanningByYearAndMonthAndDeletedAtIsNull(2025, 8) }
+        verify(exactly = 0) { assignmentService.getAssignmentsByPlanningIdAndLocationId(any(), any()) }
     }
 }
