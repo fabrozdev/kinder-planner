@@ -12,8 +12,8 @@ import java.util.*
 @RestController
 @RequestMapping("/planning")
 class PlanningController(private val planningService: PlanningService) {
-    @GetMapping
-    fun getPlanning(): PlanningDto = planningService.getPlanning()
+    @GetMapping("/location/{locationId}")
+    fun getPlanningByLocationId(@PathVariable locationId: UUID): PlanningDto = planningService.getPlanning(locationId)
 
     @GetMapping("/{month}/{year}/{locationId}")
     fun getPlanningByMonthYearAndLocationId(@PathVariable month: Int, @PathVariable year: Int, @PathVariable locationId: UUID): PlanningWithAssignmentDto = planningService.getPlanningByMonthAndYearAndLocationId(month, year, locationId)
