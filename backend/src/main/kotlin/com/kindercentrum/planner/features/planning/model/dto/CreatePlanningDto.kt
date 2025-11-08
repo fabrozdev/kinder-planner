@@ -5,6 +5,7 @@ import jakarta.validation.constraints.Min
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.NotNull
 import jakarta.validation.constraints.Size
+import java.util.UUID
 
 data class CreatePlanningDto(
     @field:NotNull(message = "Year is required")
@@ -16,6 +17,9 @@ data class CreatePlanningDto(
     @field:Min(value = 1, message = "Month must be between 1 and 12")
     @field:Max(value = 12, message = "Month must be between 1 and 12")
     val month: Int,
+
+    @field:NotNull(message = "Location is required")
+    val locationId: UUID,
 
     @field:NotBlank(message = "Label is required")
     @field:Size(min = 2, max = 100, message = "Label must be between 2 and 100 characters")

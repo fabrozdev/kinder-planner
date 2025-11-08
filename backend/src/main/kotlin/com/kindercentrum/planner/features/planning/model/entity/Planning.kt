@@ -1,5 +1,6 @@
 package com.kindercentrum.planner.features.planning.model.entity
 
+import com.kindercentrum.planner.features.locations.model.entity.Location
 import jakarta.persistence.*
 import org.hibernate.annotations.Check
 import org.hibernate.annotations.CreationTimestamp
@@ -9,7 +10,12 @@ import java.util.*
 
 
 @Entity
-@Table(name = "planning")
+@Table(
+    name = "planning",
+    uniqueConstraints = [
+        UniqueConstraint(columnNames = ["year", "month", "location_id"])
+    ]
+)
 data class Planning(
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -22,6 +28,10 @@ data class Planning(
     @Column(nullable = false)
     @Check(constraints = "month >= 1 AND month <= 12")
     val month: Int,
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "location_id", nullable = false, foreignKey = ForeignKey(name = "fk_planning_location"))
+    val location: Location,
 
     @Column(nullable = false)
     val label: String,

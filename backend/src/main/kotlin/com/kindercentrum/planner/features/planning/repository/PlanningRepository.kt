@@ -5,7 +5,7 @@ import org.springframework.data.repository.CrudRepository
 import java.util.*
 
 interface PlanningRepository: CrudRepository<Planning, UUID> {
-    fun findByYearAndMonthAndDeletedAtIsNull(year: Int, month: Int): Planning?
-    fun findPlanningByYearAndMonthAndDeletedAtIsNull(year: Int, month: Int): Planning
+    fun findByYearAndMonthAndLocationIdAndDeletedAtIsNull(year: Int, month: Int, locationId: UUID): Planning?
+    fun findPlanningByYearAndMonthAndLocationIdAndDeletedAtIsNull(year: Int, month: Int, locationId: UUID): Planning
     fun findByIdAndDeletedAtIsNull(id: UUID): Planning?
 }

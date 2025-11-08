@@ -2,6 +2,8 @@ package com.kindercentrum.planner.features.planning.service
 
 import com.kindercentrum.planner.features.assignments.model.dto.AssignmentDto
 import com.kindercentrum.planner.features.assignments.service.AssignmentService
+import com.kindercentrum.planner.features.locations.model.entity.Location
+import com.kindercentrum.planner.features.locations.repository.LocationRepository
 import com.kindercentrum.planner.features.planning.model.dto.CreatePlanningDto
 import com.kindercentrum.planner.features.planning.model.entity.Planning
 import com.kindercentrum.planner.features.planning.repository.PlanningRepository
@@ -18,6 +20,7 @@ import kotlin.test.Test
 
 class PlanningServiceTest {
     private val planningRepository = mockk<PlanningRepository>()
+    private val locationRepository = mockk<LocationRepository>()
     private val assignmentService = mockk<AssignmentService>()
     private lateinit var planningService: PlanningService
 
@@ -25,9 +28,15 @@ class PlanningServiceTest {
     private val generatedPlanningId = UUID.fromString("aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee")
     private val testLocationId = UUID.fromString("22222222-3333-4444-5555-666666666666")
 
+    private val testLocation = Location(
+        id = testLocationId,
+        name = "Test Location",
+        active = true
+    )
+
     @BeforeEach
     fun setUp() {
-        planningService = PlanningService(planningRepository, assignmentService)
+        planningService = PlanningService(planningRepository, locationRepository, assignmentService)
     }
 
     @Test
@@ -36,18 +45,20 @@ class PlanningServiceTest {
             id = testPlanningId,
             year = 2025,
             month = 1,
+            location = testLocation,
             label = "January 2025"
         )
 
-        every { planningRepository.findPlanningByYearAndMonthAndDeletedAtIsNull(any(), any()) } returns planning
+        every { planningRepository.findPlanningByYearAndMonthAndLocationIdAndDeletedAtIsNull(any(), any(), testLocationId) } returns planning
 
-        val result = planningService.getPlanning()
+        val result = planningService.getPlanning(testLocationId)
 
         assertEquals(2025, result.year)
         assertEquals(1, result.month)
+        assertEquals(testLocationId.toString(), result.locationId)
         assertEquals("January 2025", result.label)
 
-        verify { planningRepository.findPlanningByYearAndMonthAndDeletedAtIsNull(any(), any()) }
+        verify { planningRepository.findPlanningByYearAndMonthAndLocationIdAndDeletedAtIsNull(any(), any(), testLocationId) }
     }
 
     @Test
@@ -55,10 +66,12 @@ class PlanningServiceTest {
         val createDto = CreatePlanningDto(
             year = 2025,
             month = 3,
+            locationId = testLocationId,
             label = "March 2025"
         )
 
-        every { planningRepository.findByYearAndMonthAndDeletedAtIsNull(2025, 3) } returns null
+        every { planningRepository.findByYearAndMonthAndLocationIdAndDeletedAtIsNull(2025, 3, testLocationId) } returns null
+        every { locationRepository.findById(testLocationId) } returns Optional.of(testLocation)
         every { planningRepository.save(any<Planning>()) } answers {
             val planning = firstArg<Planning>()
             planning.copy(id = generatedPlanningId)
@@ -68,18 +81,21 @@ class PlanningServiceTest {
 
         assertEquals(2025, result.year)
         assertEquals(3, result.month)
+        assertEquals(testLocationId.toString(), result.locationId)
         assertEquals("March 2025", result.label)
         assertNotNull(result.id)
 
-        verify { planningRepository.findByYearAndMonthAndDeletedAtIsNull(2025, 3) }
+        verify { planningRepository.findByYearAndMonthAndLocationIdAndDeletedAtIsNull(2025, 3, testLocationId) }
+        verify { locationRepository.findById(testLocationId) }
         verify { planningRepository.save(any<Planning>()) }
     }
 
     @Test
-    fun `should throw exception when creating planning with duplicate year and month`() {
+    fun `should throw exception when creating planning with duplicate year, month and location`() {
         val createDto = CreatePlanningDto(
             year = 2025,
             month = 3,
+            locationId = testLocationId,
             label = "March 2025"
         )
 
@@ -87,30 +103,34 @@ class PlanningServiceTest {
             id = testPlanningId,
             year = 2025,
             month = 3,
+            location = testLocation,
             label = "Existing March 2025"
         )
 
-        every { planningRepository.findByYearAndMonthAndDeletedAtIsNull(2025, 3) } returns existingPlanning
+        every { planningRepository.findByYearAndMonthAndLocationIdAndDeletedAtIsNull(2025, 3, testLocationId) } returns existingPlanning
 
         val exception = assertThrows<PlanningAlreadyExistsException> {
             planningService.create(createDto)
         }
 
-        assertEquals("Planning for 2025-3 already exists", exception.message)
-        verify { planningRepository.findByYearAndMonthAndDeletedAtIsNull(2025, 3) }
+        assertEquals("Planning for 2025-3 at location $testLocationId already exists", exception.message)
+        verify { planningRepository.findByYearAndMonthAndLocationIdAndDeletedAtIsNull(2025, 3, testLocationId) }
+        verify(exactly = 0) { locationRepository.findById(any()) }
         verify(exactly = 0) { planningRepository.save(any()) }
     }
 
     @Test
-    fun `should allow creating planning with same year and month if previous was deleted`() {
+    fun `should allow creating planning with same year and month for different location`() {
         val createDto = CreatePlanningDto(
             year = 2025,
             month = 3,
+            locationId = testLocationId,
             label = "New March 2025"
         )
 
-        // No active planning exists (deleted one doesn't count)
-        every { planningRepository.findByYearAndMonthAndDeletedAtIsNull(2025, 3) } returns null
+        // No active planning exists for this location (deleted one doesn't count)
+        every { planningRepository.findByYearAndMonthAndLocationIdAndDeletedAtIsNull(2025, 3, testLocationId) } returns null
+        every { locationRepository.findById(testLocationId) } returns Optional.of(testLocation)
         every { planningRepository.save(any<Planning>()) } answers {
             val planning = firstArg<Planning>()
             planning.copy(id = generatedPlanningId)
@@ -122,8 +142,31 @@ class PlanningServiceTest {
         assertEquals(3, result.month)
         assertEquals("New March 2025", result.label)
 
-        verify { planningRepository.findByYearAndMonthAndDeletedAtIsNull(2025, 3) }
+        verify { planningRepository.findByYearAndMonthAndLocationIdAndDeletedAtIsNull(2025, 3, testLocationId) }
+        verify { locationRepository.findById(testLocationId) }
         verify { planningRepository.save(any<Planning>()) }
+    }
+
+    @Test
+    fun `should throw exception when location not found`() {
+        val createDto = CreatePlanningDto(
+            year = 2025,
+            month = 4,
+            locationId = testLocationId,
+            label = "April 2025"
+        )
+
+        every { planningRepository.findByYearAndMonthAndLocationIdAndDeletedAtIsNull(2025, 4, testLocationId) } returns null
+        every { locationRepository.findById(testLocationId) } returns Optional.empty()
+
+        val exception = assertThrows<LocationNotFoundException> {
+            planningService.create(createDto)
+        }
+
+        assertEquals("Location with id $testLocationId not found", exception.message)
+        verify { planningRepository.findByYearAndMonthAndLocationIdAndDeletedAtIsNull(2025, 4, testLocationId) }
+        verify { locationRepository.findById(testLocationId) }
+        verify(exactly = 0) { planningRepository.save(any()) }
     }
 
     @Test
@@ -132,6 +175,7 @@ class PlanningServiceTest {
             id = testPlanningId,
             year = 2025,
             month = 4,
+            location = testLocation,
             label = "April 2025",
             deletedAt = null
         )
@@ -180,6 +224,7 @@ class PlanningServiceTest {
             id = testPlanningId,
             year = 2025,
             month = 6,
+            location = testLocation,
             label = "June 2025"
         )
 
@@ -202,7 +247,7 @@ class PlanningServiceTest {
             )
         )
 
-        every { planningRepository.findPlanningByYearAndMonthAndDeletedAtIsNull(2025, 6) } returns planning
+        every { planningRepository.findPlanningByYearAndMonthAndLocationIdAndDeletedAtIsNull(2025, 6, testLocationId) } returns planning
         every { assignmentService.getAssignmentsByPlanningIdAndLocationId(testPlanningId, testLocationId) } returns assignments
 
         val result = planningService.getPlanningByMonthAndYearAndLocationId(6, 2025, testLocationId)
@@ -210,11 +255,12 @@ class PlanningServiceTest {
         assertEquals(testPlanningId.toString(), result.id)
         assertEquals(2025, result.year)
         assertEquals(6, result.month)
+        assertEquals(testLocationId.toString(), result.locationId)
         assertEquals("June 2025", result.label)
         assertEquals(2, result.assignments.size)
         assertEquals(assignments, result.assignments)
 
-        verify { planningRepository.findPlanningByYearAndMonthAndDeletedAtIsNull(2025, 6) }
+        verify { planningRepository.findPlanningByYearAndMonthAndLocationIdAndDeletedAtIsNull(2025, 6, testLocationId) }
         verify { assignmentService.getAssignmentsByPlanningIdAndLocationId(testPlanningId, testLocationId) }
     }
 
@@ -224,10 +270,11 @@ class PlanningServiceTest {
             id = testPlanningId,
             year = 2025,
             month = 7,
+            location = testLocation,
             label = "July 2025"
         )
 
-        every { planningRepository.findPlanningByYearAndMonthAndDeletedAtIsNull(2025, 7) } returns planning
+        every { planningRepository.findPlanningByYearAndMonthAndLocationIdAndDeletedAtIsNull(2025, 7, testLocationId) } returns planning
         every { assignmentService.getAssignmentsByPlanningIdAndLocationId(testPlanningId, testLocationId) } returns emptyList()
 
         val result = planningService.getPlanningByMonthAndYearAndLocationId(7, 2025, testLocationId)
@@ -235,10 +282,11 @@ class PlanningServiceTest {
         assertEquals(testPlanningId.toString(), result.id)
         assertEquals(2025, result.year)
         assertEquals(7, result.month)
+        assertEquals(testLocationId.toString(), result.locationId)
         assertEquals("July 2025", result.label)
         assertEquals(0, result.assignments.size)
 
-        verify { planningRepository.findPlanningByYearAndMonthAndDeletedAtIsNull(2025, 7) }
+        verify { planningRepository.findPlanningByYearAndMonthAndLocationIdAndDeletedAtIsNull(2025, 7, testLocationId) }
         verify { assignmentService.getAssignmentsByPlanningIdAndLocationId(testPlanningId, testLocationId) }
     }
 
@@ -248,17 +296,18 @@ class PlanningServiceTest {
             id = null,  // ID is null
             year = 2025,
             month = 8,
+            location = testLocation,
             label = "August 2025"
         )
 
-        every { planningRepository.findPlanningByYearAndMonthAndDeletedAtIsNull(2025, 8) } returns planning
+        every { planningRepository.findPlanningByYearAndMonthAndLocationIdAndDeletedAtIsNull(2025, 8, testLocationId) } returns planning
 
         val exception = assertThrows<IllegalStateException> {
             planningService.getPlanningByMonthAndYearAndLocationId(8, 2025, testLocationId)
         }
 
         assertEquals("Planning should have an ID", exception.message)
-        verify { planningRepository.findPlanningByYearAndMonthAndDeletedAtIsNull(2025, 8) }
+        verify { planningRepository.findPlanningByYearAndMonthAndLocationIdAndDeletedAtIsNull(2025, 8, testLocationId) }
         verify(exactly = 0) { assignmentService.getAssignmentsByPlanningIdAndLocationId(any(), any()) }
     }
 }
