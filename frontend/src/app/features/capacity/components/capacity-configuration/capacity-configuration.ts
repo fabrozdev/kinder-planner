@@ -2,6 +2,7 @@ import { Component, signal } from '@angular/core';
 import { MatDivider } from '@angular/material/divider';
 import { MatIconButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
+import { DayOfWeek } from '@/app/shared/models/day-of-week';
 
 @Component({
   selector: 'app-capacity-configuration',

@@ -1,4 +1,4 @@
-interface DayOfWeek {
+export interface DayOfWeek {
   key: string;
   label: string;
   short: string;

@@ -3,11 +3,11 @@ import { Planning } from '@/app/shared/models/planning';
 import { Location } from '@/app/shared/models/location';
 import { Child } from '@/app/shared/models/child';
 import { Assignment, CreateAssignment } from '@/app/shared/models/assignment';
-import { DayOfWeek } from '@/app/shared/models/day-of-week';
 import { PlannerService } from './planner.service';
 import { LocationService } from './location.service';
 import { ChildrenService } from './children.service';
 import { AssignmentService } from './assignment.service';
+import { DayOfWeek } from '@/app/shared/models/day-of-week';
 
 @Injectable({
   providedIn: 'root',
@@ -24,6 +24,9 @@ export class PlanningStateService {
   private readonly _children = signal<Child[]>([]);
   private readonly _assignments = signal<Assignment[]>([]);
   private readonly _loading = signal<boolean>(false);
+
+  // Track which planning/location combinations have been loaded
+  private readonly loadedAssignmentKeys = new Set<string>();
 
   // Exposed read-only signals
   readonly planning = this._planning.asReadonly();
@@ -105,21 +108,35 @@ export class PlanningStateService {
 
   // Load assignments for specific planning/location
   loadAssignments(planningId: string, locationId: string): void {
+    const key = `${planningId}-${locationId}`;
+
+    // Check if already loaded
+    if (this.loadedAssignmentKeys.has(key)) {
+      return;
+    }
+
+    // Mark as loading
+    this.loadedAssignmentKeys.add(key);
     this._loading.set(true);
-    this.assignmentService.getAssignmentsByLocationIdAndPlanningId(planningId, locationId).subscribe({
-      next: (assignments) => {
-        // Merge assignments into existing state (keep other locations' assignments)
-        const existingAssignments = this._assignments().filter(
-          (a) => !(a.planningId === planningId && a.locationId === locationId),
-        );
-        this._assignments.set([...existingAssignments, ...assignments]);
-        this._loading.set(false);
-      },
-      error: (error) => {
-        console.error('Error loading assignments:', error);
-        this._loading.set(false);
-      },
-    });
+
+    this.assignmentService
+      .getAssignmentsByLocationIdAndPlanningId(planningId, locationId)
+      .subscribe({
+        next: (assignments) => {
+          // Merge assignments into existing state (keep other locations' assignments)
+          const existingAssignments = this._assignments().filter(
+            (a) => !(a.planningId === planningId && a.locationId === locationId),
+          );
+          this._assignments.set([...existingAssignments, ...assignments]);
+          this._loading.set(false);
+        },
+        error: (error) => {
+          console.error('Error loading assignments:', error);
+          // Remove from loaded keys on error so it can be retried
+          this.loadedAssignmentKeys.delete(key);
+          this._loading.set(false);
+        },
+      });
   }
 
   // Create assignment with optimistic update
@@ -188,11 +205,11 @@ export class PlanningStateService {
   // Helper method to map assignments to days structure
   private mapAssignmentsToDays(assignments: Assignment[], children: Child[]): DayOfWeek[] {
     const daysOfWeek: DayOfWeek[] = [
-      { key: 'MON', label: 'Monday', short: 'Mon', children: [] },
-      { key: 'TUE', label: 'Tuesday', short: 'Tue', children: [] },
-      { key: 'WED', label: 'Wednesday', short: 'Wed', children: [] },
-      { key: 'THU', label: 'Thursday', short: 'Thu', children: [] },
-      { key: 'FRI', label: 'Friday', short: 'Fri', children: [] },
+      { key: 'MON', label: 'Monday', short: 'Mon', children: [], capability: { max: 10 } },
+      { key: 'TUE', label: 'Tuesday', short: 'Tue', children: [], capability: { max: 10 } },
+      { key: 'WED', label: 'Wednesday', short: 'Wed', children: [], capability: { max: 10 } },
+      { key: 'THU', label: 'Thursday', short: 'Thu', children: [], capability: { max: 10 } },
+      { key: 'FRI', label: 'Friday', short: 'Fri', children: [], capability: { max: 10 } },
     ];
 
     assignments.forEach((assignment) => {

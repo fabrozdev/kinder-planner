@@ -1,8 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { Assignment } from '@/app/shared/models/assignment';
-import { CreateAssignmentDto } from '@/app/shared/models/dto/create-assignment-dto';
+import { Assignment, CreateAssignment } from '@/app/shared/models/assignment';
 
 @Injectable({
   providedIn: 'root',
@@ -22,7 +21,7 @@ export class AssignmentService {
     });
   }
 
-  createAssignment(assignmentDto: CreateAssignmentDto): Observable<Assignment> {
+  createAssignment(assignmentDto: CreateAssignment): Observable<Assignment> {
     return this.http.post<Assignment>(`/assignments`, assignmentDto);
   }
 

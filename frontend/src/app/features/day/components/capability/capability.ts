@@ -1,5 +1,6 @@
-import { Component, Input } from '@angular/core';
+import { Component, input } from '@angular/core';
 import { MatChip } from '@angular/material/chips';
+import { DayOfWeek } from '@/app/shared/models/day-of-week';
 
 @Component({
   selector: 'app-capability',
@@ -7,11 +8,9 @@ import { MatChip } from '@angular/material/chips';
   templateUrl: './capability.html',
 })
 export class Capability {
-  @Input()
-  capability: DayOfWeek['capability'] = {
+  capability = input<DayOfWeek['capability']>({
     max: 0,
-  };
+  });
 
-  @Input()
-  count: number = 0;
+  count = input<number>(0);
 }
