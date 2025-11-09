@@ -1,6 +1,14 @@
-export interface Planning {
+import { Assignment } from '@/app/shared/models/assignment';
+
+interface Planning {
   id: string;
   year: number;
   month: number;
   label: string;
 }
+
+interface PlanningWithAssignment extends Planning {
+  assignments: Assignment[];
+}
+
+export type { Planning, PlanningWithAssignment };

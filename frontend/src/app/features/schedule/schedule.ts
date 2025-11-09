@@ -32,6 +32,8 @@ export class Schedule {
   daysOfWeek = computed<DayOfWeek[]>(() => {
     const locationId = this.location().id;
     const assignmentsByLocationAndDay = this.stateService.assignmentsByLocationAndDay();
+
+    console.log(assignmentsByLocationAndDay.get(locationId));
     return (
       assignmentsByLocationAndDay.get(locationId) || [
         { key: 'MON', label: 'Monday', short: 'Mon', capability: { max: 10 }, children: [] },
@@ -43,19 +45,17 @@ export class Schedule {
     );
   });
 
-  // Expose loading and planning state
+  // Expose loading state
   readonly loading = this.stateService.loading;
-  readonly planning = this.stateService.planning;
 
   constructor() {
-    // Effect to load assignments when location or planning changes
-    // This won't create a loop because loadAssignments has its own caching
+    // Effect to load planning data for this location
+    // This won't create a loop because loadPlanning has its own caching
     effect(() => {
       const location = this.location();
-      const planning = this.stateService.planning();
 
-      if (location && planning) {
-        this.stateService.loadAssignments(planning.id, location.id);
+      if (location) {
+        this.stateService.loadPlanning(location.id);
       }
     });
   }

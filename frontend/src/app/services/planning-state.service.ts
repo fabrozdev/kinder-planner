@@ -1,5 +1,5 @@
 import { computed, inject, Injectable, signal } from '@angular/core';
-import { Planning } from '@/app/shared/models/planning';
+import { Planning, PlanningWithAssignment } from '@/app/shared/models/planning';
 import { Location } from '@/app/shared/models/location';
 import { Child } from '@/app/shared/models/child';
 import { Assignment, CreateAssignment } from '@/app/shared/models/assignment';
@@ -19,54 +19,73 @@ export class PlanningStateService {
   private readonly assignmentService = inject(AssignmentService);
 
   // Core state signals
-  private readonly _planning = signal<Planning | null>(null);
   private readonly _locations = signal<Location[]>([]);
   private readonly _children = signal<Child[]>([]);
-  private readonly _assignments = signal<Assignment[]>([]);
+  private readonly _plannings = signal<PlanningWithAssignment[]>([]);
   private readonly _loading = signal<boolean>(false);
 
-  // Track which planning/location combinations have been loaded
-  private readonly loadedAssignmentKeys = new Set<string>();
+  // Track which location IDs have been loaded
+  private readonly loadedLocationKeys = new Set<string>();
 
   // Exposed read-only signals
-  readonly planning = this._planning.asReadonly();
   readonly locations = this._locations.asReadonly();
   readonly children = this._children.asReadonly();
-  readonly assignments = this._assignments.asReadonly();
+  readonly plannings = this._plannings.asReadonly();
   readonly loading = this._loading.asReadonly();
 
   // Computed signal for assignments grouped by location and day
   readonly assignmentsByLocationAndDay = computed(() => {
-    const assignments = this._assignments();
+    const plannings = this._plannings();
     const children = this._children();
-    const planning = this._planning();
-
-    if (!planning) return new Map<string, DayOfWeek[]>();
+    const locations = this._locations();
 
     const locationMap = new Map<string, DayOfWeek[]>();
 
-    // Get all unique location IDs
-    const locationIds = [...new Set(assignments.map((a) => a.locationId))];
-
-    locationIds.forEach((locationId) => {
-      const locationAssignments = assignments.filter((a) => a.locationId === locationId);
-      const daysOfWeek = this.mapAssignmentsToDays(locationAssignments, children);
-      locationMap.set(locationId, daysOfWeek);
+    // For each location, find its planning and map assignments to days
+    locations.forEach((location) => {
+      const planning = plannings.find((p) => p.id.includes(location.id));
+      if (planning && planning.assignments) {
+        const daysOfWeek = this.mapAssignmentsToDays(planning.assignments, children);
+        locationMap.set(location.id, daysOfWeek);
+      }
     });
 
     return locationMap;
   });
 
-  // Load planning data
-  loadPlanning(): void {
+  // Load planning data for a specific location
+  loadPlanning(locationId: string): void {
+    // Check if already loaded
+    if (this.loadedLocationKeys.has(locationId)) {
+      return;
+    }
+
+    const month = 11;
+    const year = 2025;
+
+    this.loadedLocationKeys.add(locationId);
     this._loading.set(true);
-    this.plannerService.getPlanning().subscribe({
+
+    this.plannerService.getPlanningByMonthAndYearAndLocationId(month, year, locationId).subscribe({
       next: (planning) => {
-        this._planning.set(planning);
+        // Add or update planning in the array
+        this._plannings.update((plannings) => {
+          const index = plannings.findIndex((p) => p.id === planning.id);
+          if (index >= 0) {
+            // Update existing
+            const updated = [...plannings];
+            updated[index] = planning;
+            return updated;
+          } else {
+            // Add new
+            return [...plannings, planning];
+          }
+        });
         this._loading.set(false);
       },
       error: (error) => {
         console.error('Error loading planning:', error);
+        this.loadedLocationKeys.delete(locationId);
         this._loading.set(false);
       },
     });
@@ -106,39 +125,6 @@ export class PlanningStateService {
     });
   }
 
-  // Load assignments for specific planning/location
-  loadAssignments(planningId: string, locationId: string): void {
-    const key = `${planningId}-${locationId}`;
-
-    // Check if already loaded
-    if (this.loadedAssignmentKeys.has(key)) {
-      return;
-    }
-
-    // Mark as loading
-    this.loadedAssignmentKeys.add(key);
-    this._loading.set(true);
-
-    this.assignmentService
-      .getAssignmentsByLocationIdAndPlanningId(planningId, locationId)
-      .subscribe({
-        next: (assignments) => {
-          // Merge assignments into existing state (keep other locations' assignments)
-          const existingAssignments = this._assignments().filter(
-            (a) => !(a.planningId === planningId && a.locationId === locationId),
-          );
-          this._assignments.set([...existingAssignments, ...assignments]);
-          this._loading.set(false);
-        },
-        error: (error) => {
-          console.error('Error loading assignments:', error);
-          // Remove from loaded keys on error so it can be retried
-          this.loadedAssignmentKeys.delete(key);
-          this._loading.set(false);
-        },
-      });
-  }
-
   // Create assignment with optimistic update
   createAssignment(dto: CreateAssignment): void {
     // Optimistic update: create temporary assignment
@@ -149,29 +135,77 @@ export class PlanningStateService {
       note: dto.note || '',
     };
 
-    this._assignments.update((assignments) => [...assignments, optimisticAssignment]);
+    // Add to the appropriate planning's assignments
+    this._plannings.update((plannings) =>
+      plannings.map((planning) => {
+        // Match by planning ID (planning ID should match dto.planningId or contain location ID)
+        if (planning.id.includes(dto.locationId)) {
+          return {
+            ...planning,
+            assignments: [...(planning.assignments || []), optimisticAssignment],
+          };
+        }
+        return planning;
+      }),
+    );
 
     // Persist to backend
     this.assignmentService.createAssignment(dto).subscribe({
       next: (serverAssignment) => {
         // Replace temporary assignment with server response
-        this._assignments.update((assignments) =>
-          assignments.map((a) => (a.id === tempId ? serverAssignment : a)),
+        this._plannings.update((plannings) =>
+          plannings.map((planning) => {
+            if (planning.id.includes(dto.locationId)) {
+              return {
+                ...planning,
+                assignments: planning.assignments.map((a) =>
+                  a.id === tempId ? serverAssignment : a,
+                ),
+              };
+            }
+            return planning;
+          }),
         );
       },
       error: (error) => {
         console.error('Error creating assignment:', error);
         // Rollback optimistic update
-        this._assignments.update((assignments) => assignments.filter((a) => a.id !== tempId));
+        this._plannings.update((plannings) =>
+          plannings.map((planning) => {
+            if (planning.id.includes(dto.locationId)) {
+              return {
+                ...planning,
+                assignments: planning.assignments.filter((a) => a.id !== tempId),
+              };
+            }
+            return planning;
+          }),
+        );
       },
     });
   }
 
   // Delete assignment with optimistic update
   deleteAssignment(assignmentId: string): void {
+    // Find and store the removed assignment for potential rollback
+    let removedAssignment: Assignment | undefined;
+    let planningId: string | undefined;
+
     // Optimistic update: remove from state immediately
-    const removedAssignment = this._assignments().find((a) => a.id === assignmentId);
-    this._assignments.update((assignments) => assignments.filter((a) => a.id !== assignmentId));
+    this._plannings.update((plannings) =>
+      plannings.map((planning) => {
+        const assignmentIndex = planning.assignments.findIndex((a) => a.id === assignmentId);
+        if (assignmentIndex >= 0) {
+          removedAssignment = planning.assignments[assignmentIndex];
+          planningId = planning.id;
+          return {
+            ...planning,
+            assignments: planning.assignments.filter((a) => a.id !== assignmentId),
+          };
+        }
+        return planning;
+      }),
+    );
 
     // Persist to backend
     this.assignmentService.deleteAssignment(assignmentId).subscribe({
@@ -181,8 +215,18 @@ export class PlanningStateService {
       error: (error) => {
         console.error('Error deleting assignment:', error);
         // Rollback: restore the assignment
-        if (removedAssignment) {
-          this._assignments.update((assignments) => [...assignments, removedAssignment]);
+        if (removedAssignment && planningId) {
+          this._plannings.update((plannings) =>
+            plannings.map((planning) => {
+              if (planning.id === planningId) {
+                return {
+                  ...planning,
+                  assignments: [...planning.assignments, removedAssignment!],
+                };
+              }
+              return planning;
+            }),
+          );
         }
       },
     });
@@ -194,12 +238,10 @@ export class PlanningStateService {
     this.loadChildren();
   }
 
-  // Invalidate assignments cache for specific planning/location
-  invalidateAssignments(planningId: string, locationId: string): void {
-    this._assignments.update((assignments) =>
-      assignments.filter((a) => !(a.planningId === planningId && a.locationId === locationId)),
-    );
-    this.loadAssignments(planningId, locationId);
+  // Invalidate planning cache for specific location
+  invalidatePlanning(locationId: string): void {
+    this.loadedLocationKeys.delete(locationId);
+    this.loadPlanning(locationId);
   }
 
   // Helper method to map assignments to days structure
@@ -214,6 +256,7 @@ export class PlanningStateService {
 
     assignments.forEach((assignment) => {
       const child = children.find((c) => c.id === assignment.childId);
+      console.log(child);
       if (child && daysOfWeek[assignment.dayOfWeek]) {
         daysOfWeek[assignment.dayOfWeek].children.push({
           id: child.id,
