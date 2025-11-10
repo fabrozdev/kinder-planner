@@ -10,7 +10,7 @@ import { DayOfWeek } from '@/app/shared/models/day-of-week';
   templateUrl: './capacity-configuration.html',
 })
 export class CapacityConfiguration {
-  daysOfWeek = signal<Omit<DayOfWeek, 'children'>[]>([
+  daysOfWeek = signal<Omit<DayOfWeek, 'assignments'>[]>([
     { key: 'MON', label: 'Monday', short: 'Mon', capability: { max: 0 } },
     { key: 'TUE', label: 'Tuesday', short: 'Tue', capability: { max: 0 } },
     { key: 'WED', label: 'Wednesday', short: 'Wed', capability: { max: 0 } },

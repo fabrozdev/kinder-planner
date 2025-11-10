@@ -1,5 +1,5 @@
 import { computed, inject, Injectable, signal } from '@angular/core';
-import { Planning, PlanningWithAssignment } from '@/app/shared/models/planning';
+import { PlanningWithAssignment } from '@/app/shared/models/planning';
 import { Location } from '@/app/shared/models/location';
 import { Child } from '@/app/shared/models/child';
 import { Assignment, CreateAssignment } from '@/app/shared/models/assignment';
@@ -7,7 +7,7 @@ import { PlannerService } from './planner.service';
 import { LocationService } from './location.service';
 import { ChildrenService } from './children.service';
 import { AssignmentService } from './assignment.service';
-import { DayOfWeek } from '@/app/shared/models/day-of-week';
+import { DayOfWeek, WEEKDAY } from '@/app/shared/models/day-of-week';
 
 @Injectable({
   providedIn: 'root',
@@ -36,16 +36,15 @@ export class PlanningStateService {
   // Computed signal for assignments grouped by location and day
   readonly assignmentsByLocationAndDay = computed(() => {
     const plannings = this._plannings();
-    const children = this._children();
     const locations = this._locations();
 
     const locationMap = new Map<string, DayOfWeek[]>();
 
-    // For each location, find its planning and map assignments to days
+    // For each location, find its planning and group assignments to days
     locations.forEach((location) => {
-      const planning = plannings.find((p) => p.id.includes(location.id));
-      if (planning && planning.assignments) {
-        const daysOfWeek = this.mapAssignmentsToDays(planning.assignments, children);
+      const planning = plannings.find((p) => p.locationId.includes(location.id));
+      if (planning?.assignments) {
+        const daysOfWeek = this.groupAssignmentByDay(planning.assignments);
         locationMap.set(location.id, daysOfWeek);
       }
     });
@@ -115,7 +114,11 @@ export class PlanningStateService {
     this._loading.set(true);
     this.childrenService.getChildren().subscribe({
       next: (children) => {
-        this._children.set(children);
+        // Sort children alphabetically by first name
+        const sortedChildren = [...children].sort((a, b) =>
+          a.firstName.localeCompare(b.firstName)
+        );
+        this._children.set(sortedChildren);
         this._loading.set(false);
       },
       error: (error) => {
@@ -127,11 +130,31 @@ export class PlanningStateService {
 
   // Create assignment with optimistic update
   createAssignment(dto: CreateAssignment): void {
+    // Find the child for the optimistic assignment
+    const child = this._children().find((c) => c.id === dto.childId);
+    if (!child) {
+      console.error('Child not found for assignment:', dto.childId);
+      return;
+    }
+
+    // Check if child already has an assignment for this day and location
+    const planning = this._plannings().find((p) => p.locationId.includes(dto.locationId));
+    if (planning) {
+      const existingAssignment = planning.assignments.find(
+        (a) => a.childId === dto.childId && a.dayOfWeek === dto.dayOfWeek
+      );
+      if (existingAssignment) {
+        console.warn('Child already has an assignment for this day:', `${child.firstName} ${child.lastName}`);
+        return;
+      }
+    }
+
     // Optimistic update: create temporary assignment
     const tempId = `temp-${Date.now()}`;
     const optimisticAssignment: Assignment = {
       id: tempId,
       ...dto,
+      child,
       note: dto.note || '',
     };
 
@@ -139,7 +162,7 @@ export class PlanningStateService {
     this._plannings.update((plannings) =>
       plannings.map((planning) => {
         // Match by planning ID (planning ID should match dto.planningId or contain location ID)
-        if (planning.id.includes(dto.locationId)) {
+        if (planning.locationId.includes(dto.locationId)) {
           return {
             ...planning,
             assignments: [...(planning.assignments || []), optimisticAssignment],
@@ -155,7 +178,7 @@ export class PlanningStateService {
         // Replace temporary assignment with server response
         this._plannings.update((plannings) =>
           plannings.map((planning) => {
-            if (planning.id.includes(dto.locationId)) {
+            if (planning.locationId.includes(dto.locationId)) {
               return {
                 ...planning,
                 assignments: planning.assignments.map((a) =>
@@ -172,7 +195,7 @@ export class PlanningStateService {
         // Rollback optimistic update
         this._plannings.update((plannings) =>
           plannings.map((planning) => {
-            if (planning.id.includes(dto.locationId)) {
+            if (planning.locationId.includes(dto.locationId)) {
               return {
                 ...planning,
                 assignments: planning.assignments.filter((a) => a.id !== tempId),
@@ -245,26 +268,23 @@ export class PlanningStateService {
   }
 
   // Helper method to map assignments to days structure
-  private mapAssignmentsToDays(assignments: Assignment[], children: Child[]): DayOfWeek[] {
-    const daysOfWeek: DayOfWeek[] = [
-      { key: 'MON', label: 'Monday', short: 'Mon', children: [], capability: { max: 10 } },
-      { key: 'TUE', label: 'Tuesday', short: 'Tue', children: [], capability: { max: 10 } },
-      { key: 'WED', label: 'Wednesday', short: 'Wed', children: [], capability: { max: 10 } },
-      { key: 'THU', label: 'Thursday', short: 'Thu', children: [], capability: { max: 10 } },
-      { key: 'FRI', label: 'Friday', short: 'Fri', children: [], capability: { max: 10 } },
-    ];
+  private groupAssignmentByDay(assignments: Assignment[]): DayOfWeek[] {
+    const daysOfWeek: DayOfWeek[] = WEEKDAY.map((day) => ({
+      ...day,
+      assignments: [],
+    }));
 
     assignments.forEach((assignment) => {
-      const child = children.find((c) => c.id === assignment.childId);
-      console.log(child);
-      if (child && daysOfWeek[assignment.dayOfWeek]) {
-        daysOfWeek[assignment.dayOfWeek].children.push({
-          id: child.id,
-          name: `${child.firstName} ${child.lastName}`,
-          assignmentId: assignment.id,
-          group: child.group,
-        });
+      if (daysOfWeek[assignment.dayOfWeek]) {
+        daysOfWeek[assignment.dayOfWeek].assignments.push(assignment);
       }
+    });
+
+    // Sort assignments within each day alphabetically by child's first name
+    daysOfWeek.forEach((day) => {
+      day.assignments.sort((a, b) =>
+        a.child.firstName.localeCompare(b.child.firstName)
+      );
     });
 
     return daysOfWeek;

@@ -33,14 +33,13 @@ export class Schedule {
     const locationId = this.location().id;
     const assignmentsByLocationAndDay = this.stateService.assignmentsByLocationAndDay();
 
-    console.log(assignmentsByLocationAndDay.get(locationId));
     return (
       assignmentsByLocationAndDay.get(locationId) || [
-        { key: 'MON', label: 'Monday', short: 'Mon', capability: { max: 10 }, children: [] },
-        { key: 'TUE', label: 'Tuesday', short: 'Tue', capability: { max: 10 }, children: [] },
-        { key: 'WED', label: 'Wednesday', short: 'Wed', capability: { max: 10 }, children: [] },
-        { key: 'THU', label: 'Thursday', short: 'Thu', capability: { max: 10 }, children: [] },
-        { key: 'FRI', label: 'Friday', short: 'Fri', capability: { max: 10 }, children: [] },
+        { key: 'MON', label: 'Monday', short: 'Mon', capability: { max: 10 }, assignments: [] },
+        { key: 'TUE', label: 'Tuesday', short: 'Tue', capability: { max: 10 }, assignments: [] },
+        { key: 'WED', label: 'Wednesday', short: 'Wed', capability: { max: 10 }, assignments: [] },
+        { key: 'THU', label: 'Thursday', short: 'Thu', capability: { max: 10 }, assignments: [] },
+        { key: 'FRI', label: 'Friday', short: 'Fri', capability: { max: 10 }, assignments: [] },
       ]
     );
   });

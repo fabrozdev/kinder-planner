@@ -5,6 +5,7 @@ interface Planning {
   year: number;
   month: number;
   label: string;
+  locationId: string;
 }
 
 interface PlanningWithAssignment extends Planning {

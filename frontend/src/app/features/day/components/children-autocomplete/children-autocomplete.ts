@@ -74,7 +74,7 @@ export class ChildrenAutocomplete implements OnInit {
     const plannings = this.stateService.plannings();
 
     // Find the planning for this location
-    const planning = plannings.find((p) => p.id.includes(locationId));
+    const planning = plannings.find((p) => p.locationId.includes(locationId));
 
     if (!planning) {
       console.error('Planning not available for location:', locationId);
