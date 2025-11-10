@@ -28,8 +28,8 @@ data class Assignment(
     @Enumerated(EnumType.STRING)
     @Column(name = "day_of_week", nullable = false, length = 3)
     val dayOfWeek: DayOfWeek,
-    public
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "child_id", nullable = false, foreignKey = ForeignKey(name = "fk_assignment_child"))
     val child: Child,
 

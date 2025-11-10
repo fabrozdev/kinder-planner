@@ -10,6 +10,8 @@ import com.kindercentrum.planner.features.children.repository.ChildRepository
 import com.kindercentrum.planner.features.locations.repository.LocationRepository
 import com.kindercentrum.planner.features.planning.repository.PlanningRepository
 import jakarta.persistence.EntityNotFoundException
+import org.springframework.cache.annotation.CacheEvict
+import org.springframework.cache.annotation.Cacheable
 import org.springframework.dao.DuplicateKeyException
 import org.springframework.stereotype.Service
 import java.util.*
@@ -21,10 +23,12 @@ class AssignmentService(
     private val childRepository: ChildRepository,
     private val planningRepository: PlanningRepository,
 ) {
+    @Cacheable(value = ["assignments"], key = "#planningId + '_' + #locationId")
     fun getAssignmentsByPlanningIdAndLocationId(planningId: UUID, locationId: UUID): List<AssignmentDto> =
         assignmentRepository.findByPlanningIdAndLocationId(planningId, locationId).map(
             AssignmentMapper.INSTANCE::toDto)
 
+    @CacheEvict(value = ["assignments"], key = "#assignmentDto.planningId + '_' + #assignmentDto.locationId")
     fun create(assignmentDto: CreateAssignmentDto): AssignmentDto {
         val locationId = UUID.fromString(assignmentDto.locationId)
         val childId = UUID.fromString(assignmentDto.childId)

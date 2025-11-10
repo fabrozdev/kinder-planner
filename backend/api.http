@@ -62,7 +62,8 @@ Content-Type: application/json
 {
   "year": 2025,
   "month": 11,
-  "label": "Planning 11/2025"
+  "label": "Planning 11/2025",
+  "locationId": "fbd0d464-41e4-4c9d-bee3-234d86840668"
 }
 
 ### delete planning
