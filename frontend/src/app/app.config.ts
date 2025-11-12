@@ -1,5 +1,6 @@
 import {
   ApplicationConfig,
+  isDevMode,
   provideBrowserGlobalErrorListeners,
   provideZoneChangeDetection,
 } from '@angular/core';
@@ -10,6 +11,13 @@ import { provideNgxSkeletonLoader } from 'ngx-skeleton-loader';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { API_BASE_URL } from './core/config/api.config';
 import { baseUrlInterceptor } from './core/interceptors/base-url.interceptor';
+import { provideStore } from '@ngrx/store';
+import { provideEffects } from '@ngrx/effects';
+import { provideStoreDevtools } from '@ngrx/store-devtools';
+import { locationsReducer, LocationsEffects } from './store/locations';
+import { childrenReducer, ChildrenEffects } from './store/children';
+import { assignmentsReducer, AssignmentsEffects } from './store/assignments';
+import { planningsReducer, PlanningsEffects } from './store/plannings';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -24,5 +32,24 @@ export const appConfig: ApplicationConfig = {
       },
     }),
     { provide: API_BASE_URL, useValue: 'http://localhost:8080/api' },
+    provideStore({
+      locations: locationsReducer,
+      children: childrenReducer,
+      assignments: assignmentsReducer,
+      plannings: planningsReducer,
+    }),
+    provideEffects([
+      LocationsEffects,
+      ChildrenEffects,
+      AssignmentsEffects,
+      PlanningsEffects,
+    ]),
+    provideStoreDevtools({
+      maxAge: 25,
+      logOnly: !isDevMode(),
+      autoPause: true,
+      trace: false,
+      traceLimit: 75,
+    }),
   ],
 };

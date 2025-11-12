@@ -4,8 +4,9 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { ChildrenAutocomplete } from '@/app/features/day/components/children-autocomplete/children-autocomplete';
 import { MatChip, MatChipRemove } from '@angular/material/chips';
 import { MatIcon } from '@angular/material/icon';
-import { PlanningStateService } from '@/app/services/planning-state.service';
 import { DayOfWeek } from '@/app/shared/models/day-of-week';
+import { Store } from '@ngrx/store';
+import { deleteAssignment } from '@/app/store/assignments';
 
 const DAY_OF_WEEK_MAP: Record<string, number> = {
   MON: 0,
@@ -21,9 +22,8 @@ const DAY_OF_WEEK_MAP: Record<string, number> = {
   templateUrl: './day.html',
 })
 export class Day {
-  private readonly stateService = inject(PlanningStateService);
+  private readonly store = inject(Store);
 
-  // Input signals
   day = input.required<DayOfWeek>();
   locationId = input.required<string>();
 
@@ -32,6 +32,6 @@ export class Day {
   }
 
   onRemoveChild(assignmentId: string) {
-    this.stateService.deleteAssignment(assignmentId);
+    this.store.dispatch(deleteAssignment({ assignmentId }));
   }
 }
