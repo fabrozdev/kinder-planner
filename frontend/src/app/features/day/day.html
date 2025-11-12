@@ -1,14 +1,17 @@
 <div class="min-w-[200px] max-w-[400px]">
   <div class="flex justify-between mb-4">
     <h3 class="text-lg">{{ day().label }}</h3>
-    <app-capability [capability]="day().capability" [count]="day().children.length"></app-capability>
+    <app-capability
+      [capability]="day().capability"
+      [count]="day().assignments.length"
+    ></app-capability>
   </div>
   <app-children-autocomplete [dayOfWeek]="dayOfWeek" [locationId]="locationId()" />
   <div class="flex flex-col gap-2">
-    @for (child of day().children; track child.id) {
+    @for (assignment of day().assignments; track assignment.id) {
       <mat-chip style="height: 35px" class="line-clamp-1">
-        {{ child.name }} - {{ child.group }}
-        <button matChipRemove (click)="onRemoveChild(child.assignmentId)">
+        {{ assignment.child.firstName }} {{ assignment.child.lastName }}
+        <button matChipRemove (click)="onRemoveChild(assignment.id)">
           <mat-icon>delete</mat-icon>
         </button>
       </mat-chip>

@@ -70,15 +70,19 @@ export class ChildrenAutocomplete implements OnInit {
       return;
     }
 
-    const planning = this.stateService.planning();
+    const locationId = this.locationId();
+    const plannings = this.stateService.plannings();
+
+    // Find the planning for this location
+    const planning = plannings.find((p) => p.locationId.includes(locationId));
 
     if (!planning) {
-      console.error('Planning not available');
+      console.error('Planning not available for location:', locationId);
       return;
     }
 
     const assignmentDto: CreateAssignment = {
-      locationId: this.locationId(),
+      locationId: locationId,
       dayOfWeek: this.dayOfWeek(),
       childId: child.id,
       planningId: planning.id,

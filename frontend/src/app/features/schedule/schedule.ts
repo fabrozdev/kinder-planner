@@ -32,30 +32,29 @@ export class Schedule {
   daysOfWeek = computed<DayOfWeek[]>(() => {
     const locationId = this.location().id;
     const assignmentsByLocationAndDay = this.stateService.assignmentsByLocationAndDay();
+
     return (
       assignmentsByLocationAndDay.get(locationId) || [
-        { key: 'MON', label: 'Monday', short: 'Mon', capability: { max: 10 }, children: [] },
-        { key: 'TUE', label: 'Tuesday', short: 'Tue', capability: { max: 10 }, children: [] },
-        { key: 'WED', label: 'Wednesday', short: 'Wed', capability: { max: 10 }, children: [] },
-        { key: 'THU', label: 'Thursday', short: 'Thu', capability: { max: 10 }, children: [] },
-        { key: 'FRI', label: 'Friday', short: 'Fri', capability: { max: 10 }, children: [] },
+        { key: 'MON', label: 'Monday', short: 'Mon', capability: { max: 10 }, assignments: [] },
+        { key: 'TUE', label: 'Tuesday', short: 'Tue', capability: { max: 10 }, assignments: [] },
+        { key: 'WED', label: 'Wednesday', short: 'Wed', capability: { max: 10 }, assignments: [] },
+        { key: 'THU', label: 'Thursday', short: 'Thu', capability: { max: 10 }, assignments: [] },
+        { key: 'FRI', label: 'Friday', short: 'Fri', capability: { max: 10 }, assignments: [] },
       ]
     );
   });
 
-  // Expose loading and planning state
+  // Expose loading state
   readonly loading = this.stateService.loading;
-  readonly planning = this.stateService.planning;
 
   constructor() {
-    // Effect to load assignments when location or planning changes
-    // This won't create a loop because loadAssignments has its own caching
+    // Effect to load planning data for this location
+    // This won't create a loop because loadPlanning has its own caching
     effect(() => {
       const location = this.location();
-      const planning = this.stateService.planning();
 
-      if (location && planning) {
-        this.stateService.loadAssignments(planning.id, location.id);
+      if (location) {
+        this.stateService.loadPlanning(location.id);
       }
     });
   }

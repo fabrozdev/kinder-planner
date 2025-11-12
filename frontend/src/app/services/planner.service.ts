@@ -1,7 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { Planning } from '@/app/shared/models/planning';
+import { Planning, PlanningWithAssignment } from '@/app/shared/models/planning';
 
 @Injectable({
   providedIn: 'root',
@@ -11,5 +11,13 @@ export class PlannerService {
 
   getPlanning(): Observable<Planning> {
     return this.http.get<Planning>('/planning');
+  }
+
+  getPlanningByMonthAndYearAndLocationId(
+    month: number,
+    year: number,
+    locationId: string,
+  ): Observable<PlanningWithAssignment> {
+    return this.http.get<PlanningWithAssignment>(`/planning/${month}/${year}/${locationId}`);
   }
 }

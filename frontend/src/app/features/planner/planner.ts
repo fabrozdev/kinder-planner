@@ -14,7 +14,6 @@ export class Planner {
 
   // Expose state from service
   readonly loading = this.stateService.loading;
-  readonly planning = this.stateService.planning;
   readonly locations = this.stateService.locations;
 
   constructor() {
@@ -22,7 +21,6 @@ export class Planner {
   }
 
   private initialize() {
-    this.stateService.loadPlanning();
     this.stateService.loadLocations();
     this.stateService.loadChildren();
   }
