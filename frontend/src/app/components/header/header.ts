@@ -1,19 +1,18 @@
-import { Component, inject, signal } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
+import { Component, signal } from '@angular/core';
 import { SettingsDialog } from '@/app/components/settings-dialog/settings-dialog';
 import { PlannerNavigator } from '@/app/features/planner/components/planner-navigator/planner-navigator';
 import { ButtonModule } from 'primeng/button';
-import { SelectButton, SelectButtonModule } from 'primeng/selectbutton';
+import { SelectButtonModule } from 'primeng/selectbutton';
 import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-header',
-  imports: [PlannerNavigator, ButtonModule, SelectButtonModule, FormsModule],
+  imports: [PlannerNavigator, ButtonModule, SelectButtonModule, FormsModule, SettingsDialog],
   templateUrl: './header.html',
 })
 export class Header {
-  readonly dialog = inject(MatDialog);
   mode = signal<'MONTH' | 'YEAR'>('MONTH');
+  settingsDialogVisible = signal(false);
 
   modeOptions = [
     { label: 'Monthly', value: 'MONTH' },
@@ -21,6 +20,6 @@ export class Header {
   ];
 
   openDialog() {
-    const dialogRef = this.dialog.open(SettingsDialog);
+    this.settingsDialogVisible.set(true);
   }
 }

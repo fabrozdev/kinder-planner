@@ -1,26 +1,25 @@
-import { Component } from '@angular/core';
-import {
-  MatDialogActions,
-  MatDialogClose,
-  MatDialogContent,
-  MatDialogTitle,
-} from '@angular/material/dialog';
-import { MatButton } from '@angular/material/button';
-import { MatDivider } from '@angular/material/divider';
+import { Component, input, output } from '@angular/core';
+import { Dialog } from 'primeng/dialog';
+import { ButtonModule } from 'primeng/button';
+import { Divider } from 'primeng/divider';
 import { ChildrenImport } from './components/children-import/children-import';
 
 @Component({
   selector: 'app-settings-dialog',
   imports: [
-    MatDialogActions,
-    MatButton,
-    MatDialogClose,
-    MatDialogContent,
-    MatDialogTitle,
-    MatDivider,
+    Dialog,
+    ButtonModule,
+    Divider,
     ChildrenImport,
   ],
   templateUrl: './settings-dialog.html',
   standalone: true,
 })
-export class SettingsDialog {}
+export class SettingsDialog {
+  visible = input.required<boolean>();
+  visibleChange = output<boolean>();
+
+  close() {
+    this.visibleChange.emit(false);
+  }
+}

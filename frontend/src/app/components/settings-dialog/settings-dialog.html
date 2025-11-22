@@ -1,10 +1,14 @@
-<h2 mat-dialog-title>Settings</h2>
-<mat-dialog-content class="min-w-[500px] min-h-[200px]">
+<p-dialog
+  [(visible)]="visible"
+  [header]="'Settings'"
+  [modal]="true"
+  [style]="{ width: '500px', minHeight: '200px' }"
+>
   <div class="mb-2">
     <app-children-import></app-children-import>
   </div>
-  <mat-divider></mat-divider>
-</mat-dialog-content>
-<mat-dialog-actions align="end">
-  <button matButton mat-dialog-close>Close</button>
-</mat-dialog-actions>
+  <p-divider />
+  <ng-template #footer>
+    <p-button label="Close" (onClick)="close()" />
+  </ng-template>
+</p-dialog>
