@@ -1,8 +1,6 @@
 import { Component, computed, effect, inject, input } from '@angular/core';
 import { Day } from '@/app/features/day/day';
 import { Location } from '@/app/shared/models/location';
-import { MatIconButton } from '@angular/material/button';
-import { MatIcon } from '@angular/material/icon';
 import { Capacity } from '@/app/features/capacity/capacity';
 import { DayOfWeek, WEEKDAY } from '@/app/shared/models/day-of-week';
 import { Store } from '@ngrx/store';
@@ -14,14 +12,7 @@ import { CardModule } from 'primeng/card';
 
 @Component({
   selector: 'app-schedule',
-  imports: [
-    Day,
-    MatIcon,
-    MatIconButton,
-    Capacity,
-    ButtonModule,
-    CardModule,
-  ],
+  imports: [Day, Capacity, ButtonModule, CardModule],
   templateUrl: './schedule.html',
 })
 export class Schedule {

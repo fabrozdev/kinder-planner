@@ -1,13 +1,12 @@
 import { Component, inject, input } from '@angular/core';
-import { MatIconButton } from '@angular/material/button';
-import { MatIcon } from '@angular/material/icon';
 import { MatDialog } from '@angular/material/dialog';
 import { CapacityDialog } from '@/app/components/capacity-dialog/capacity-dialog';
 import { Location } from '@/app/shared/models/location';
+import { ButtonModule } from 'primeng/button';
 
 @Component({
   selector: 'app-capacity',
-  imports: [MatIcon, MatIconButton],
+  imports: [ButtonModule],
   templateUrl: './capacity.html',
 })
 export class Capacity {

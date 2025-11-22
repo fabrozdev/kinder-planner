@@ -4,9 +4,7 @@
     <p>Children data (e.g. Firstname, Lastname, Group)</p>
   </div>
   <input #fileInput type="file" accept=".csv" class="hidden" (change)="onFileSelected($event)" />
-  <button matIconButton (click)="fileInput.click()">
-    <mat-icon>upload</mat-icon>
-  </button>
+  <p-button icon="pi pi-upload" [text]="true" (click)="fileInput.click()" />
 </div>
 @if (fileName()) {
   <p class="underline underlined-offset-1">{{ fileName() }}</p>

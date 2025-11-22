@@ -3,13 +3,9 @@
     <div class="flex justify-between">
       <p class="text-lg">{{ day.label }}</p>
       <div class="flex items-center gap-2">
-        <button matIconButton (click)="remove(day.key)">
-          <mat-icon>remove</mat-icon>
-        </button>
+        <p-button icon="pi pi-minus" [text]="true" (click)="remove(day.key)" />
         <p>{{ day.capability?.max ?? 0 }}</p>
-        <button matIconButton (click)="add(day.key)">
-          <mat-icon>add</mat-icon>
-        </button>
+        <p-button icon="pi pi-plus" [text]="true" (click)="add(day.key)" />
       </div>
     </div>
     <mat-divider />

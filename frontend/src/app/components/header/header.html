@@ -6,8 +6,6 @@
       <mat-chip-option class="!h-[30px]" [selected]="mode() === 'YEAR'">Yearly</mat-chip-option>
     </mat-chip-listbox>
     <app-planner-navigator></app-planner-navigator>
-    <button matIconButton (click)="openDialog()">
-      <mat-icon>settings</mat-icon>
-    </button>
+    <p-button icon="pi pi-cog" [text]="true" (click)="openDialog()" />
   </div>
 </header>
