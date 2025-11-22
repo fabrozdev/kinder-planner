@@ -20,6 +20,7 @@ import { assignmentsReducer, AssignmentsEffects } from './store/assignments';
 import { planningsReducer, PlanningsEffects } from './store/plannings';
 import { providePrimeNG } from 'primeng/config';
 import Aura from '@primeuix/themes/aura';
+import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -41,6 +42,7 @@ export const appConfig: ApplicationConfig = {
       plannings: planningsReducer,
     }),
     provideEffects([LocationsEffects, ChildrenEffects, AssignmentsEffects, PlanningsEffects]),
+    provideAnimationsAsync(),
     provideStoreDevtools({
       maxAge: 25,
       logOnly: !isDevMode(),
