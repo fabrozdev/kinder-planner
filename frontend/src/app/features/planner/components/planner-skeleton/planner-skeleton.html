@@ -1,22 +1,18 @@
 <div class="flex flex-col w-full">
   <div class="flex w-full justify-end">
-    <div class="w-[150px]">
-      <ngx-skeleton-loader count="1" appearance="line" />
-    </div>
+    <p-skeleton height="30px" width="150px" />
   </div>
   <div class="flex flex-col w-full">
-    <div class="w-[200px]">
-      <ngx-skeleton-loader count="1" appearance="line" />
-    </div>
-    <div class="flex gap-2">
+    <p-skeleton height="30px" width="200px" class="mb-4" />
+    <div class="flex gap-3">
       @for (item of [1, 2, 3, 4, 5]; track $index) {
-        <div class="w-[250px]">
-          <ngx-skeleton-loader count="1" appearance="line" />
-        </div>
+        <p-skeleton height="30px" width="250px" />
       }
     </div>
-    <div class="w-full mt-5">
-      <ngx-skeleton-loader count="6" appearance="line" />
+    <div class="w-full mt-12 flex flex-col gap-6">
+      @for (item of [1, 2, 3, 4, 5, 6]; track $index) {
+        <p-skeleton height="30px" />
+      }
     </div>
   </div>
 </div>

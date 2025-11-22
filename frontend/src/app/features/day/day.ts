@@ -2,7 +2,7 @@ import { Component, inject, input } from '@angular/core';
 import { Capability } from '@/app/features/day/components/capability/capability';
 import { ReactiveFormsModule } from '@angular/forms';
 import { ChildrenAutocomplete } from '@/app/features/day/components/children-autocomplete/children-autocomplete';
-import { Chip, ChipModule } from 'primeng/chip';
+import { ChipModule } from 'primeng/chip';
 import { DayOfWeek } from '@/app/shared/models/day-of-week';
 import { Store } from '@ngrx/store';
 import { deleteAssignment } from '@/app/store/assignments';
