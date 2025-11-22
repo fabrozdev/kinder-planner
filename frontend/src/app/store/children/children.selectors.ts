@@ -1,38 +1,20 @@
 import { createFeatureSelector, createSelector } from '@ngrx/store';
 import { ChildrenState, childrenAdapter } from './children.state';
 
-export const selectChildrenState =
-  createFeatureSelector<ChildrenState>('children');
+export const selectChildrenState = createFeatureSelector<ChildrenState>('children');
 
-const { selectAll, selectEntities, selectIds, selectTotal } =
-  childrenAdapter.getSelectors();
+const childrenSelectors = childrenAdapter.getSelectors(selectChildrenState);
 
-export const selectAllChildren = createSelector(
-  selectChildrenState,
-  selectAll
-);
+export const selectAllChildren = childrenSelectors.selectAll;
+export const selectChildEntities = childrenSelectors.selectEntities;
+export const selectChildIds = childrenSelectors.selectIds;
+export const selectTotal = childrenSelectors.selectTotal;
 
-export const selectChildEntities = createSelector(
-  selectChildrenState,
-  selectEntities
-);
+export const selectChildrenLoading = createSelector(selectChildrenState, (state) => state.loading);
 
-export const selectChildIds = createSelector(selectChildrenState, selectIds);
+export const selectChildrenLoaded = createSelector(selectChildrenState, (state) => state.loaded);
 
-export const selectChildrenLoading = createSelector(
-  selectChildrenState,
-  (state) => state.loading
-);
-
-export const selectChildrenLoaded = createSelector(
-  selectChildrenState,
-  (state) => state.loaded
-);
-
-export const selectChildrenError = createSelector(
-  selectChildrenState,
-  (state) => state.error
-);
+export const selectChildrenError = createSelector(selectChildrenState, (state) => state.error);
 
 export const selectChildById = (id: string) =>
   createSelector(selectChildEntities, (entities) => entities[id]);

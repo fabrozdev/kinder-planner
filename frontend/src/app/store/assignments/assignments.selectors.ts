@@ -2,35 +2,23 @@ import { createFeatureSelector, createSelector } from '@ngrx/store';
 import { AssignmentsState, assignmentsAdapter } from './assignments.state';
 import { Assignment } from '../../shared/models/assignment';
 
-export const selectAssignmentsState =
-  createFeatureSelector<AssignmentsState>('assignments');
+export const selectAssignmentsState = createFeatureSelector<AssignmentsState>('assignments');
 
-const { selectAll, selectEntities, selectIds, selectTotal } =
-  assignmentsAdapter.getSelectors();
+const assignmentsSelectors = assignmentsAdapter.getSelectors(selectAssignmentsState);
 
-export const selectAllAssignments = createSelector(
-  selectAssignmentsState,
-  selectAll
-);
-
-export const selectAssignmentEntities = createSelector(
-  selectAssignmentsState,
-  selectEntities
-);
-
-export const selectAssignmentIds = createSelector(
-  selectAssignmentsState,
-  selectIds
-);
+export const selectAllAssignments = assignmentsSelectors.selectAll;
+export const selectAssignmentEntities = assignmentsSelectors.selectEntities;
+export const selectAssignmentIds = assignmentsSelectors.selectIds;
+export const selectTotal = assignmentsSelectors.selectTotal;
 
 export const selectAssignmentsLoading = createSelector(
   selectAssignmentsState,
-  (state) => state.loading
+  (state) => state.loading,
 );
 
 export const selectAssignmentsError = createSelector(
   selectAssignmentsState,
-  (state) => state.error
+  (state) => state.error,
 );
 
 export const selectAssignmentById = (id: string) =>
@@ -38,21 +26,14 @@ export const selectAssignmentById = (id: string) =>
 
 export const selectAssignmentsByLocation = (locationId: string) =>
   createSelector(selectAllAssignments, (assignments) =>
-    assignments.filter((a) => a.locationId === locationId)
+    assignments.filter((a) => a.locationId === locationId),
   );
 
-export const selectAssignmentsByLocationAndDay = (
-  locationId: string,
-  dayOfWeek: number
-) =>
+export const selectAssignmentsByLocationAndDay = (locationId: string, dayOfWeek: number) =>
   createSelector(selectAllAssignments, (assignments) =>
-    assignments.filter(
-      (a) => a.locationId === locationId && a.dayOfWeek === dayOfWeek
-    )
+    assignments.filter((a) => a.locationId === locationId && a.dayOfWeek === dayOfWeek),
   );
 
-// Selector to group assignments by location and day
-// Returns a Map<locationId, DayOfWeek[]>
 export const selectAssignmentsByLocationAndDayGrouped = createSelector(
   selectAllAssignments,
   (assignments) => {
@@ -78,20 +59,16 @@ export const selectAssignmentsByLocationAndDayGrouped = createSelector(
       dayGroup.assignments.push(assignment);
     });
 
-    // Sort assignments within each day by child firstName
     grouped.forEach((days) => {
       days.forEach((day) => {
-        day.assignments.sort((a, b) =>
-          a.child.firstName.localeCompare(b.child.firstName)
-        );
+        day.assignments.sort((a, b) => a.child.firstName.localeCompare(b.child.firstName));
       });
     });
 
     return grouped;
-  }
+  },
 );
 
-// Helper interface for grouped assignments
 export interface DayOfWeek {
   dayOfWeek: number;
   assignments: Assignment[];
