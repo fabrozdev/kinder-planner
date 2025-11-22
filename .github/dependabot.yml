@@ -1,0 +1,85 @@
+version: 2
+updates:
+  # Frontend npm dependencies
+  - package-ecosystem: "npm"
+    directory: "/frontend"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+    open-pull-requests-limit: 10
+    reviewers:
+      - "fabrozdev"
+    labels:
+      - "dependencies"
+      - "frontend"
+    commit-message:
+      prefix: "chore(deps)"
+      include: "scope"
+    groups:
+      # Group Angular updates together
+      angular:
+        patterns:
+          - "@angular/*"
+          - "@angular-devkit/*"
+        update-types:
+          - "minor"
+          - "patch"
+
+      # Group PrimeNG updates together
+      primeng:
+        patterns:
+          - "primeng"
+          - "primeicons"
+          - "@primeuix/*"
+        update-types:
+          - "minor"
+          - "patch"
+
+      # Group NgRx updates together
+      ngrx:
+        patterns:
+          - "@ngrx/*"
+        update-types:
+          - "minor"
+          - "patch"
+
+      # Group dev dependencies
+      dev-dependencies:
+        dependency-type: "development"
+        update-types:
+          - "minor"
+          - "patch"
+
+  # Backend 
+
+  # - package-ecosystem: "maven"
+  #   directory: "/backend"
+  #   schedule:
+  #     interval: "weekly"
+  #     day: "monday"
+  #     time: "09:00"
+  #   open-pull-requests-limit: 5
+  #   reviewers:
+  #     - "fabrozdev"
+  #   labels:
+  #     - "dependencies"
+  #     - "backend"
+  #   commit-message:
+  #     prefix: "chore(deps)"
+
+  # GitHub Actions
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+    open-pull-requests-limit: 5
+    reviewers:
+      - "fabrozdev"
+    labels:
+      - "dependencies"
+      - "ci/cd"
+    commit-message:
+      prefix: "chore(ci)"
