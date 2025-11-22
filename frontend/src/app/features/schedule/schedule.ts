@@ -1,7 +1,6 @@
 import { Component, computed, effect, inject, input } from '@angular/core';
 import { Day } from '@/app/features/day/day';
 import { Location } from '@/app/shared/models/location';
-import { MatCard, MatCardContent, MatCardHeader, MatCardTitle } from '@angular/material/card';
 import { MatIconButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
 import { Capacity } from '@/app/features/capacity/capacity';
@@ -10,18 +9,18 @@ import { Store } from '@ngrx/store';
 import { loadPlanning, selectPlanningsLoading } from '@/app/store/plannings';
 import { selectAllAssignments } from '@/app/store/assignments';
 import { Assignment } from '@/app/shared/models/assignment';
+import { ButtonModule } from 'primeng/button';
+import { CardModule } from 'primeng/card';
 
 @Component({
   selector: 'app-schedule',
   imports: [
     Day,
-    MatCard,
-    MatCardHeader,
-    MatCardTitle,
-    MatCardContent,
     MatIcon,
     MatIconButton,
     Capacity,
+    ButtonModule,
+    CardModule,
   ],
   templateUrl: './schedule.html',
 })
