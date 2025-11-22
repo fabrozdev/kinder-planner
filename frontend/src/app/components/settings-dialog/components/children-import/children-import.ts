@@ -1,17 +1,19 @@
 import { Component, inject, signal } from '@angular/core';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import { MessageService } from 'primeng/api';
 import { ImportChild } from '@/app/shared/models/child';
 import { ChildrenService } from '@/app/services/children.service';
 import { ButtonModule } from 'primeng/button';
+import { ToastModule } from 'primeng/toast';
 
 @Component({
   selector: 'app-children-import',
-  imports: [ButtonModule],
+  imports: [ButtonModule, ToastModule],
+  providers: [MessageService],
   templateUrl: './children-import.html',
 })
 export class ChildrenImport {
   private readonly childrenService = inject(ChildrenService);
-  private _snackBar = inject(MatSnackBar);
+  private readonly messageService = inject(MessageService);
   fileName = signal<string | null>(null);
 
   onFileSelected(event: Event): void {
@@ -26,10 +28,18 @@ export class ChildrenImport {
     this.fileName.set(file.name);
     this.childrenService.importChildren(file).subscribe({
       next: (importedChildren: ImportChild) => {
-        this._snackBar.open(`${importedChildren.importedCount} children imported successfully.`);
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Success',
+          detail: `${importedChildren.importedCount} children imported successfully.`,
+        });
       },
       error: () => {
-        this._snackBar.open('Error importing children.');
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: 'Error importing children.',
+        });
       },
     });
   }
