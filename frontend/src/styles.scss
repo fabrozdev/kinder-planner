@@ -1,8 +1,6 @@
 @use "tailwindcss";
-@import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200..800&display=swap');
-
-
 @import "primeicons/primeicons.css";
+@import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200..800&display=swap');
 
 html,
 body {
@@ -11,11 +9,6 @@ body {
 body {
   margin: 0;
   font-family: Bricolage Grotesque, 'Helvetica Neue', sans-serif;
-}
-
-/*Fix TailwindCSS and Angular Material conflict*/
-.mdc-notched-outline__notch {
-  border-right: none;
 }
 
 .schedule-container {
