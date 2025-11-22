@@ -1,11 +1,11 @@
 import { Component, signal } from '@angular/core';
-import { MatDivider } from '@angular/material/divider';
+import { Divider } from 'primeng/divider';
 import { DayOfWeek } from '@/app/shared/models/day-of-week';
 import { ButtonModule } from 'primeng/button';
 
 @Component({
   selector: 'app-capacity-configuration',
-  imports: [MatDivider, ButtonModule],
+  imports: [Divider, ButtonModule],
   templateUrl: './capacity-configuration.html',
 })
 export class CapacityConfiguration {

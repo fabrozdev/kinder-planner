@@ -1,10 +1,10 @@
 import { Component, input } from '@angular/core';
-import { MatChip } from '@angular/material/chips';
+import { Chip } from 'primeng/chip';
 import { DayOfWeek } from '@/app/shared/models/day-of-week';
 
 @Component({
   selector: 'app-capability',
-  imports: [MatChip],
+  imports: [Chip],
   templateUrl: './capability.html',
 })
 export class Capability {
