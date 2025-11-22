@@ -18,6 +18,8 @@ import { locationsReducer, LocationsEffects } from './store/locations';
 import { childrenReducer, ChildrenEffects } from './store/children';
 import { assignmentsReducer, AssignmentsEffects } from './store/assignments';
 import { planningsReducer, PlanningsEffects } from './store/plannings';
+import { providePrimeNG } from 'primeng/config';
+import Aura from '@primeuix/themes/aura';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -38,18 +40,18 @@ export const appConfig: ApplicationConfig = {
       assignments: assignmentsReducer,
       plannings: planningsReducer,
     }),
-    provideEffects([
-      LocationsEffects,
-      ChildrenEffects,
-      AssignmentsEffects,
-      PlanningsEffects,
-    ]),
+    provideEffects([LocationsEffects, ChildrenEffects, AssignmentsEffects, PlanningsEffects]),
     provideStoreDevtools({
       maxAge: 25,
       logOnly: !isDevMode(),
       autoPause: true,
       trace: false,
       traceLimit: 75,
+    }),
+    providePrimeNG({
+      theme: {
+        preset: Aura,
+      },
     }),
   ],
 };
