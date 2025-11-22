@@ -1,17 +1,9 @@
 <header class="flex justify-between items-center">
   <h1 class="text-4xl">Planner</h1>
   <div class="flex items-center gap-2">
-    <p-selectbutton
-      [options]="modeOptions"
-      [(ngModel)]="mode"
-      optionLabel="label"
-      optionValue="value"
-      allowEmpty="false"
-    />
-    <app-planner-navigator></app-planner-navigator>
-    <p-button [icon]="'pi ' + themeIcon" [text]="true" [rounded]="true" (click)="toggleDarkMode()" />
-    <p-button icon="pi pi-cog" [text]="true" [rounded]="true" (click)="openDialog()" />
+    <app-mode-switcher />
+    <app-planner-navigator />
+    <app-theme-switcher />
+    <app-settings-button />
   </div>
 </header>
-
-<app-settings-dialog [(visible)]="settingsDialogVisible" />
