@@ -1,13 +1,12 @@
 import { Component, inject, signal } from '@angular/core';
-import { MatIconButton } from '@angular/material/button';
-import { MatIcon } from '@angular/material/icon';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ImportChild } from '@/app/shared/models/child';
 import { ChildrenService } from '@/app/services/children.service';
+import { ButtonModule } from 'primeng/button';
 
 @Component({
   selector: 'app-children-import',
-  imports: [MatIcon, MatIconButton],
+  imports: [ButtonModule],
   templateUrl: './children-import.html',
 })
 export class ChildrenImport {

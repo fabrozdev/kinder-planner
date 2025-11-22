@@ -1,10 +1,9 @@
 import { Component } from '@angular/core';
-import { MatIconButton } from '@angular/material/button';
-import { MatIcon } from '@angular/material/icon';
+import { ButtonModule } from 'primeng/button';
 
 @Component({
   selector: 'app-planner-navigator',
-  imports: [MatIcon, MatIconButton],
+  imports: [ButtonModule],
   templateUrl: './planner-navigator.html',
 })
 export class PlannerNavigator {}

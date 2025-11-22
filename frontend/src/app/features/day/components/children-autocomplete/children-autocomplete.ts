@@ -1,30 +1,17 @@
 import { Component, effect, inject, input, OnInit } from '@angular/core';
-import { MatFormField, MatInput, MatLabel } from '@angular/material/input';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
-import { MatAutocomplete, MatAutocompleteTrigger, MatOption } from '@angular/material/autocomplete';
-import { AsyncPipe } from '@angular/common';
 import { map, Observable, startWith } from 'rxjs';
-import { MatIcon } from '@angular/material/icon';
 import { Child } from '@/app/shared/models/child';
 import { CreateAssignment } from '@/app/shared/models/assignment';
 import { Store } from '@ngrx/store';
 import { selectAllChildren } from '@/app/store/children';
 import { createAssignment } from '@/app/store/assignments';
 import { selectPlanningByLocation } from '@/app/store/plannings';
+import { AutoComplete } from 'primeng/autocomplete';
 
 @Component({
   selector: 'app-children-autocomplete',
-  imports: [
-    MatFormField,
-    MatLabel,
-    MatInput,
-    ReactiveFormsModule,
-    MatAutocompleteTrigger,
-    MatAutocomplete,
-    MatOption,
-    AsyncPipe,
-    MatIcon,
-  ],
+  imports: [ReactiveFormsModule, AutoComplete],
   templateUrl: './children-autocomplete.html',
 })
 export class ChildrenAutocomplete implements OnInit {
@@ -35,6 +22,7 @@ export class ChildrenAutocomplete implements OnInit {
 
   myControl = new FormControl<string | Child>('');
   filteredOptions: Observable<Child[]> | undefined;
+  suggestions: (Child & { displayName: string })[] = [];
 
   options = this.store.selectSignal(selectAllChildren);
 
@@ -61,8 +49,13 @@ export class ChildrenAutocomplete implements OnInit {
     );
   }
 
-  displayFn(child: Child): string {
-    return child ? `${child?.firstName} ${child?.lastName}` : '';
+  onSearch(event: { query: string }) {
+    const query = event.query.toLowerCase();
+    const filtered = query ? this._filter(query) : this.options().slice();
+    this.suggestions = filtered.map(child => ({
+      ...child,
+      displayName: `${child.firstName} ${child.lastName}`
+    }));
   }
 
   onOptionSelected(child: Child) {

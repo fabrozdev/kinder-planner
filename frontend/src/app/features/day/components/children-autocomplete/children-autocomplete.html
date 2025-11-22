@@ -1,22 +1,12 @@
-<form class="example-form mb-4">
-  <mat-form-field class="example-full-width" appearance="outline" subscriptSizing="dynamic">
-    <mat-label>Assignee</mat-label>
-    <input
-      type="text"
-      matInput
-      [formControl]="myControl"
-      [matAutocomplete]="auto"
-      class="text-sm"
-    />
-    <mat-autocomplete
-      #auto="matAutocomplete"
-      [displayWith]="displayFn"
-      (optionSelected)="onOptionSelected($event.option.value)"
-    >
-      @for (option of filteredOptions | async; track option.id) {
-        <mat-option [value]="option">{{ option.firstName }} {{ option.lastName }}</mat-option>
-      }
-    </mat-autocomplete>
-    <mat-icon matSuffix>keyboard_arrow_down</mat-icon>
-  </mat-form-field>
+<form class="mb-4">
+  <p-autocomplete
+    [formControl]="myControl"
+    [suggestions]="suggestions"
+    (completeMethod)="onSearch($event)"
+    (onSelect)="onOptionSelected($event.value)"
+    optionLabel="displayName"
+    placeholder="Assignee"
+    [dropdown]="true"
+    class="w-full"
+  />
 </form>

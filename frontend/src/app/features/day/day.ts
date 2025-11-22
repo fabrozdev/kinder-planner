@@ -2,8 +2,7 @@ import { Component, inject, input } from '@angular/core';
 import { Capability } from '@/app/features/day/components/capability/capability';
 import { ReactiveFormsModule } from '@angular/forms';
 import { ChildrenAutocomplete } from '@/app/features/day/components/children-autocomplete/children-autocomplete';
-import { MatChip, MatChipRemove } from '@angular/material/chips';
-import { MatIcon } from '@angular/material/icon';
+import { ChipModule } from 'primeng/chip';
 import { DayOfWeek } from '@/app/shared/models/day-of-week';
 import { Store } from '@ngrx/store';
 import { deleteAssignment } from '@/app/store/assignments';
@@ -18,7 +17,7 @@ const DAY_OF_WEEK_MAP: Record<string, number> = {
 
 @Component({
   selector: 'app-day',
-  imports: [Capability, ReactiveFormsModule, ChildrenAutocomplete, MatChip, MatChipRemove, MatIcon],
+  imports: [Capability, ReactiveFormsModule, ChildrenAutocomplete, ChipModule],
   templateUrl: './day.html',
 })
 export class Day {

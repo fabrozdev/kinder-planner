@@ -1,9 +1,9 @@
 import { Component } from '@angular/core';
-import { NgxSkeletonLoaderComponent } from 'ngx-skeleton-loader';
+import { Skeleton } from 'primeng/skeleton';
 
 @Component({
   selector: 'app-planner-skeleton',
-  imports: [NgxSkeletonLoaderComponent],
+  imports: [Skeleton],
   templateUrl: './planner-skeleton.html',
 })
 export class PlannerSkeleton {}
