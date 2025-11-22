@@ -1,10 +1,13 @@
 <header class="flex justify-between items-center">
   <h1 class="text-4xl">Planner</h1>
   <div class="flex items-center gap-2">
-    <mat-chip-listbox>
-      <mat-chip-option class="!h-[30px]" [selected]="mode() === 'MONTH'">Monthly</mat-chip-option>
-      <mat-chip-option class="!h-[30px]" [selected]="mode() === 'YEAR'">Yearly</mat-chip-option>
-    </mat-chip-listbox>
+    <p-selectbutton
+      [options]="modeOptions"
+      [(ngModel)]="mode"
+      optionLabel="label"
+      optionValue="value"
+      allowEmpty="false"
+    />
     <app-planner-navigator></app-planner-navigator>
     <p-button icon="pi pi-cog" [text]="true" (click)="openDialog()" />
   </div>
