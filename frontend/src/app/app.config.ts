@@ -19,7 +19,7 @@ import { childrenReducer, ChildrenEffects } from './store/children';
 import { assignmentsReducer, AssignmentsEffects } from './store/assignments';
 import { planningsReducer, PlanningsEffects } from './store/plannings';
 import { providePrimeNG } from 'primeng/config';
-import Aura from '@primeuix/themes/aura';
+import Aura from '@primeuix/themes/Aura';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 
 export const appConfig: ApplicationConfig = {
@@ -53,6 +53,9 @@ export const appConfig: ApplicationConfig = {
     providePrimeNG({
       theme: {
         preset: Aura,
+        options: {
+          darkModeSelector: '.dark',
+        },
       },
     }),
   ],
