@@ -1,4 +1,4 @@
-import { Component, input, output } from '@angular/core';
+import { Component, effect, input, model, signal } from '@angular/core';
 import { Dialog } from 'primeng/dialog';
 import { ButtonModule } from 'primeng/button';
 import { Divider } from 'primeng/divider';
@@ -16,10 +16,9 @@ import { ChildrenImport } from './components/children-import/children-import';
   standalone: true,
 })
 export class SettingsDialog {
-  visible = input.required<boolean>();
-  visibleChange = output<boolean>();
+  visible = model.required<boolean>();
 
   close() {
-    this.visibleChange.emit(false);
+    this.visible.set(false);
   }
 }
