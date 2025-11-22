@@ -9,12 +9,12 @@
   <app-children-autocomplete [dayOfWeek]="dayOfWeek" [locationId]="locationId()" />
   <div class="flex flex-col gap-2">
     @for (assignment of day().assignments; track assignment.id) {
-      <mat-chip style="height: 35px" class="line-clamp-1">
-        {{ assignment.child.firstName }} {{ assignment.child.lastName }}
-        <button matChipRemove (click)="onRemoveChild(assignment.id)">
-          <mat-icon>delete</mat-icon>
-        </button>
-      </mat-chip>
+      <p-chip
+        [label]="assignment.child.firstName + ' ' + assignment.child.lastName"
+        [removable]="true"
+        (onRemove)="onRemoveChild(assignment.id)"
+        class="line-clamp-1 justify-between"
+      />
     }
   </div>
 </div>
