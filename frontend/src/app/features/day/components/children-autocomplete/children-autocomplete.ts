@@ -8,7 +8,6 @@ import { MatIcon } from '@angular/material/icon';
 import { Child } from '@/app/shared/models/child';
 import { CreateAssignment } from '@/app/shared/models/assignment';
 import { Store } from '@ngrx/store';
-import { toSignal } from '@angular/core/rxjs-interop';
 import { selectAllChildren } from '@/app/store/children';
 import { createAssignment } from '@/app/store/assignments';
 import { selectPlanningByLocation } from '@/app/store/plannings';
@@ -37,7 +36,7 @@ export class ChildrenAutocomplete implements OnInit {
   myControl = new FormControl<string | Child>('');
   filteredOptions: Observable<Child[]> | undefined;
 
-  options = toSignal(this.store.select(selectAllChildren), { initialValue: [] });
+  options = this.store.selectSignal(selectAllChildren);
 
   constructor() {
     effect(() => {

@@ -7,7 +7,6 @@ import { MatIcon } from '@angular/material/icon';
 import { Capacity } from '@/app/features/capacity/capacity';
 import { DayOfWeek, WEEKDAY } from '@/app/shared/models/day-of-week';
 import { Store } from '@ngrx/store';
-import { toSignal } from '@angular/core/rxjs-interop';
 import { loadPlanning, selectPlanningsLoading } from '@/app/store/plannings';
 import { selectAllAssignments } from '@/app/store/assignments';
 import { Assignment } from '@/app/shared/models/assignment';
@@ -31,7 +30,7 @@ export class Schedule {
 
   location = input.required<Location>();
 
-  private allAssignments = toSignal(this.store.select(selectAllAssignments), { initialValue: [] });
+  private allAssignments = this.store.selectSignal(selectAllAssignments);
 
   daysOfWeek = computed<DayOfWeek[]>(() => {
     const locationId = this.location().id;
@@ -55,7 +54,7 @@ export class Schedule {
     }));
   });
 
-  readonly loading = toSignal(this.store.select(selectPlanningsLoading), { initialValue: false });
+  readonly loading = this.store.selectSignal(selectPlanningsLoading);
 
   constructor() {
     effect(() => {
