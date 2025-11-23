@@ -2,6 +2,7 @@ package com.kindercentrum.planner.features.planning.service
 
 import com.kindercentrum.planner.features.assignments.model.dto.AssignmentDto
 import com.kindercentrum.planner.features.assignments.service.AssignmentService
+import com.kindercentrum.planner.features.children.model.dto.ChildDto
 import com.kindercentrum.planner.features.locations.model.entity.Location
 import com.kindercentrum.planner.features.locations.repository.LocationRepository
 import com.kindercentrum.planner.features.planning.model.dto.CreatePlanningDto
@@ -228,12 +229,27 @@ class PlanningServiceTest {
             label = "June 2025"
         )
 
+        val testChild1 = ChildDto(
+            id = UUID.randomUUID().toString(),
+            firstName = "John",
+            lastName = "Doe",
+            group = "Group A"
+        )
+
+        val testChild2 = ChildDto(
+            id = UUID.randomUUID().toString(),
+            firstName = "Jane",
+            lastName = "Smith",
+            group = "Group B"
+        )
+
         val assignments = listOf(
             AssignmentDto(
                 id = UUID.randomUUID().toString(),
                 locationId = testLocationId.toString(),
                 dayOfWeek = 1,
-                childId = UUID.randomUUID().toString(),
+                childId = testChild1.id,
+                child = testChild1,
                 planningId = testPlanningId.toString(),
                 note = "Test assignment 1"
             ),
@@ -241,7 +257,8 @@ class PlanningServiceTest {
                 id = UUID.randomUUID().toString(),
                 locationId = testLocationId.toString(),
                 dayOfWeek = 2,
-                childId = UUID.randomUUID().toString(),
+                childId = testChild2.id,
+                child = testChild2,
                 planningId = testPlanningId.toString(),
                 note = "Test assignment 2"
             )
@@ -308,6 +325,32 @@ class PlanningServiceTest {
 
         assertEquals("Planning should have an ID", exception.message)
         verify { planningRepository.findPlanningByYearAndMonthAndLocationIdAndDeletedAtIsNull(2025, 8, testLocationId) }
+        verify(exactly = 0) { assignmentService.getAssignmentsByPlanningIdAndLocationId(any(), any()) }
+    }
+
+    @Test
+    fun `should throw PlanningNotFoundException when planning not found in getPlanning`() {
+        every { planningRepository.findPlanningByYearAndMonthAndLocationIdAndDeletedAtIsNull(any(), any(), testLocationId) } returns null
+
+        val exception = assertThrows<PlanningNotFoundException> {
+            planningService.getPlanning(testLocationId)
+        }
+
+        assertTrue(exception.message!!.contains("Planning for"))
+        assertTrue(exception.message!!.contains("not found"))
+        verify { planningRepository.findPlanningByYearAndMonthAndLocationIdAndDeletedAtIsNull(any(), any(), testLocationId) }
+    }
+
+    @Test
+    fun `should throw PlanningNotFoundException when planning not found in getPlanningByMonthAndYearAndLocationId`() {
+        every { planningRepository.findPlanningByYearAndMonthAndLocationIdAndDeletedAtIsNull(2025, 9, testLocationId) } returns null
+
+        val exception = assertThrows<PlanningNotFoundException> {
+            planningService.getPlanningByMonthAndYearAndLocationId(9, 2025, testLocationId)
+        }
+
+        assertEquals("Planning for 2025-9 at location $testLocationId not found", exception.message)
+        verify { planningRepository.findPlanningByYearAndMonthAndLocationIdAndDeletedAtIsNull(2025, 9, testLocationId) }
         verify(exactly = 0) { assignmentService.getAssignmentsByPlanningIdAndLocationId(any(), any()) }
     }
 }

@@ -25,12 +25,16 @@ class PlanningService(
         val currentYear = now.year
         val currentMonth = now.monthValue
 
-        return PlanningMapper.INSTANCE.toDto(planningRepository
-            .findPlanningByYearAndMonthAndLocationIdAndDeletedAtIsNull(currentYear, currentMonth, locationId))
+        val planning = planningRepository
+            .findPlanningByYearAndMonthAndLocationIdAndDeletedAtIsNull(currentYear, currentMonth, locationId)
+            ?: throw PlanningNotFoundException("Planning for $currentYear-$currentMonth at location $locationId not found")
+
+        return PlanningMapper.INSTANCE.toDto(planning)
     }
 
     fun getPlanningByMonthAndYearAndLocationId(month: Int, year: Int, locationId: UUID): PlanningWithAssignmentDto {
         val planning = planningRepository.findPlanningByYearAndMonthAndLocationIdAndDeletedAtIsNull(year, month, locationId)
+            ?: throw PlanningNotFoundException("Planning for $year-$month at location $locationId not found")
         val planningId = planning.id ?: throw IllegalStateException("Planning should have an ID")
 
         val assignments = assignmentService.getAssignmentsByPlanningIdAndLocationId(planningId, locationId)

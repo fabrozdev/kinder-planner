@@ -1,0 +1,38 @@
+<p-toast />
+
+<p-dialog
+  [(visible)]="visible"
+  [header]="'Create Location'"
+  [modal]="true"
+  [style]="{ width: '500px', minHeight: '200px' }"
+>
+  <form [formGroup]="locationForm">
+    <div class="mb-2">
+      <div class="flex flex-col gap-2">
+        <label for="locationName">Location Name</label>
+        <input
+          pInputText
+          id="locationName"
+          formControlName="name"
+          placeholder="e.g., BSO Amsterdam, BSO Rotterdam"
+          class="w-full"
+        />
+        @if (locationForm.get('name')?.invalid && locationForm.get('name')?.touched) {
+          <small class="text-red-500">Location name is required.</small>
+        }
+        <small id="location-name" class="text-gray-500">
+          Enter your location name (BSO Amsterdam, BSO Rotterdam, etc.)
+        </small>
+      </div>
+    </div>
+  </form>
+  <ng-template #footer>
+    <p-button label="Close" (onClick)="close()" severity="secondary" />
+    <p-button
+      label="Save"
+      (onClick)="save()"
+      severity="success"
+      [disabled]="!isNameValid"
+    />
+  </ng-template>
+</p-dialog>
