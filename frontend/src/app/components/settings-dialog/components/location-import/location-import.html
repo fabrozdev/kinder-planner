@@ -2,8 +2,8 @@
 
 <div class="flex justify-between items-center gap-4">
   <div>
-    <h3 class="text-lg">Children Import</h3>
-    <p>Children data (e.g. Firstname, Lastname, Group)</p>
+    <h3 class="text-lg">Location Import</h3>
+    <p>Location data (e.g. Name, Address)</p>
   </div>
   <input #fileInput type="file" accept=".csv" class="hidden" (change)="onFileSelected($event)" />
   <p-button icon="pi pi-upload" [text]="true" [rounded]="true" (click)="fileInput.click()" />

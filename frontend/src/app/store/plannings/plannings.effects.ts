@@ -2,7 +2,7 @@ import { inject, Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 import { of } from 'rxjs';
-import { map, catchError, switchMap, withLatestFrom, filter, mergeMap } from 'rxjs/operators';
+import { map, catchError, withLatestFrom, filter, mergeMap } from 'rxjs/operators';
 import * as PlanningsActions from './plannings.actions';
 import * as AssignmentsActions from '../assignments/assignments.actions';
 import { PlannerService } from '../../services/planner.service';
@@ -27,7 +27,7 @@ export class PlanningsEffects {
           })
         )
       ),
-      switchMap(([action, _]) => {
+      mergeMap(([action, _]) => {
         const { locationId, month, year } = action;
 
         let isLoaded = false;
@@ -37,7 +37,7 @@ export class PlanningsEffects {
           .unsubscribe();
 
         if (isLoaded) {
-          return of({ type: 'NO_OP' }); 
+          return of({ type: 'NO_OP' });
         }
 
         return this.plannerService
