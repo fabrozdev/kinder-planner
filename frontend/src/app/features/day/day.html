@@ -1,10 +1,7 @@
 <div class="min-w-[200px] max-w-[400px]">
   <div class="flex justify-between mb-4">
     <h3 class="text-lg">{{ day().label }}</h3>
-    <app-capability
-      [capability]="day().capability"
-      [count]="day().assignments.length"
-    ></app-capability>
+    <app-day-capacity [capacity]="day().capacity" [count]="day().assignments.length" />
   </div>
   <app-children-autocomplete [dayOfWeek]="dayOfWeek" [locationId]="locationId()" />
   <div class="flex flex-col gap-2">

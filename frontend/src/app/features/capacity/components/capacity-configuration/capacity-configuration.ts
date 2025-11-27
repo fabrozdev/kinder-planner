@@ -10,17 +10,17 @@ import { ButtonModule } from 'primeng/button';
 })
 export class CapacityConfiguration {
   daysOfWeek = signal<Omit<DayOfWeek, 'assignments'>[]>([
-    { key: 'MON', label: 'Monday', short: 'Mon', capability: { max: 0 } },
-    { key: 'TUE', label: 'Tuesday', short: 'Tue', capability: { max: 0 } },
-    { key: 'WED', label: 'Wednesday', short: 'Wed', capability: { max: 0 } },
-    { key: 'THU', label: 'Thursday', short: 'Thu', capability: { max: 0 } },
-    { key: 'FRI', label: 'Friday', short: 'Fri', capability: { max: 0 } },
+    { key: 'MON', label: 'Monday', short: 'Mon', capacity: { max: 0 } },
+    { key: 'TUE', label: 'Tuesday', short: 'Tue', capacity: { max: 0 } },
+    { key: 'WED', label: 'Wednesday', short: 'Wed', capacity: { max: 0 } },
+    { key: 'THU', label: 'Thursday', short: 'Thu', capacity: { max: 0 } },
+    { key: 'FRI', label: 'Friday', short: 'Fri', capacity: { max: 0 } },
   ]);
 
   add(dayKey: DayOfWeek['key']) {
     this.daysOfWeek.set(
       this.daysOfWeek().map((day) =>
-        day.key === dayKey ? { ...day, capability: { max: (day.capability?.max ?? 0) + 1 } } : day,
+        day.key === dayKey ? { ...day, capacity: { max: (day.capacity?.max ?? 0) + 1 } } : day,
       ),
     );
   }
@@ -29,7 +29,7 @@ export class CapacityConfiguration {
     this.daysOfWeek.set(
       this.daysOfWeek().map((day) =>
         day.key === dayKey
-          ? { ...day, capability: { max: Math.max(0, (day.capability?.max ?? 0) - 1) } }
+          ? { ...day, capacity: { max: Math.max(0, (day.capacity?.max ?? 0) - 1) } }
           : day,
       ),
     );

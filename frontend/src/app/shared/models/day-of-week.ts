@@ -4,18 +4,18 @@ interface DayOfWeek {
   key: string;
   label: string;
   short: string;
-  capability?: {
+  capacity?: {
     max: number;
   };
   assignments: Assignment[];
 }
 
 const WEEKDAY: ReadonlyArray<DayOfWeek> = [
-  { key: 'MON', label: 'Monday', short: 'Mon', capability: { max: 10 }, assignments: [] },
-  { key: 'TUE', label: 'Tuesday', short: 'Tue', capability: { max: 10 }, assignments: [] },
-  { key: 'WED', label: 'Wednesday', short: 'Wed', capability: { max: 10 }, assignments: [] },
-  { key: 'THU', label: 'Thursday', short: 'Thu', capability: { max: 10 }, assignments: [] },
-  { key: 'FRI', label: 'Friday', short: 'Fri', capability: { max: 10 }, assignments: [] },
+  { key: 'MON', label: 'Monday', short: 'Mon', capacity: { max: 10 }, assignments: [] },
+  { key: 'TUE', label: 'Tuesday', short: 'Tue', capacity: { max: 10 }, assignments: [] },
+  { key: 'WED', label: 'Wednesday', short: 'Wed', capacity: { max: 10 }, assignments: [] },
+  { key: 'THU', label: 'Thursday', short: 'Thu', capacity: { max: 10 }, assignments: [] },
+  { key: 'FRI', label: 'Friday', short: 'Fri', capacity: { max: 10 }, assignments: [] },
 ];
 
 export { type DayOfWeek, WEEKDAY };

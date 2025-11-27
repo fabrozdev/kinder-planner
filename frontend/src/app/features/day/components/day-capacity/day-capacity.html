@@ -1,0 +1,5 @@
+<p-chip
+  [label]="count() + ' / ' + capacity()?.max"
+  [style]="{ 'background-color': count() >= (capacity()?.max || 0) ? '#e8f5e8' : '#ffebee' }"
+  class="!text-black"
+/>

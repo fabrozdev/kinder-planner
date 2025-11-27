@@ -3,12 +3,12 @@ import { Chip } from 'primeng/chip';
 import { DayOfWeek } from '@/app/shared/models/day-of-week';
 
 @Component({
-  selector: 'app-capability',
+  selector: 'app-day-capacity',
   imports: [Chip],
-  templateUrl: './capability.html',
+  templateUrl: './day-capacity.html',
 })
-export class Capability {
-  capability = input<DayOfWeek['capability']>({
+export class DayCapacity {
+  capacity = input<DayOfWeek['capacity']>({
     max: 0,
   });
 
