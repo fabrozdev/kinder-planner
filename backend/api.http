@@ -79,6 +79,21 @@ Content-Type: application/json
   "group": ""
 }
 
+### create planning capacity
+POST {{url}}/capacities/planning
+Content-Type: application/json
+
+{
+  "locationId": "fbd0d464-41e4-4c9d-bee3-234d86840668",
+  "planningId": "e71972e7-3731-457b-94b1-3985592a02a6",
+  "capacities": {
+    "MON": {
+      "maxChildren": 10
+    }
+  }
+}
+
+
 ### import children
 POST {{url}}/children/import
 Content-Type: multipart/form-data; boundary=WebAppBoundary
