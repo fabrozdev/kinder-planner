@@ -12,7 +12,7 @@ import org.springframework.dao.DuplicateKeyException
 import org.springframework.stereotype.Service
 import java.time.Instant
 import java.time.LocalDate
-import java.util.UUID
+import java.util.*
 
 @Service
 class PlanningService(
@@ -85,6 +85,12 @@ class PlanningService(
         val deleteUser = planning.copy(deletedAt = Instant.now())
         planningRepository.save(deleteUser)
         return true
+    }
+
+    fun getPlanningById(id: UUID): Planning {
+        val planning = planningRepository.findByIdAndDeletedAtIsNull(id)
+            ?: throw PlanningNotFoundException("Planning with id: $id not found")
+        return planning
     }
 }
 

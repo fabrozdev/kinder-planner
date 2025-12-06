@@ -5,12 +5,14 @@ import com.kindercentrum.planner.features.locations.model.entity.Location
 import com.kindercentrum.planner.features.planning.model.entity.Planning
 import jakarta.persistence.*
 import org.hibernate.annotations.Check
-import org.hibernate.annotations.CreationTimestamp
-import org.hibernate.annotations.UpdateTimestamp
-import java.time.OffsetDateTime
-import java.util.UUID
+import org.springframework.data.annotation.CreatedDate
+import org.springframework.data.annotation.LastModifiedDate
+import org.springframework.data.jpa.domain.support.AuditingEntityListener
+import java.time.Instant
+import java.util.*
 
 @Entity
+@EntityListeners(AuditingEntityListener::class)
 @Table(
     name = "capacities",
     uniqueConstraints = [
@@ -38,13 +40,13 @@ data class Capacity(
     @Check(constraints = "max_children >= 0")
     val maxChildren: Int,
 
-    @CreationTimestamp
+    @CreatedDate
     @Column(name = "created_at", nullable = false, updatable = false)
-    val createdAt: OffsetDateTime? = null,
+    var createdAt: Instant?  = null,
 
-    @UpdateTimestamp
+    @LastModifiedDate
     @Column(name = "updated_at", nullable = false)
-    var updatedAt: OffsetDateTime? = null
+    var updatedAt: Instant?  = null
 ) {
     init {
         require(maxChildren >= 0) { "Max children must be greater than or equal to 0" }

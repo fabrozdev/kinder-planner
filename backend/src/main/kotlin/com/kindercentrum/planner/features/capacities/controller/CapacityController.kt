@@ -28,12 +28,6 @@ class CapacityController(private val capacityService: CapacityService) {
     fun getCapacitiesByLocationId(@PathVariable locationId: UUID): List<CapacityDto> =
         capacityService.getCapacitiesByLocationId(locationId)
 
-    @GetMapping("/planning/{planningId}/location/{locationId}")
-    fun getCapacitiesByPlanningAndLocation(
-        @PathVariable planningId: UUID,
-        @PathVariable locationId: UUID
-    ): List<CapacityDto> = capacityService.getCapacitiesByPlanningAndLocation(planningId, locationId)
-
     @PostMapping
     fun createCapacity(@RequestBody createCapacityDto: CreateCapacityDto): ResponseEntity<CapacityDto> {
         val result = capacityService.create(createCapacityDto)
@@ -42,7 +36,7 @@ class CapacityController(private val capacityService: CapacityService) {
 
     @PostMapping("/planning")
     fun createPlanningCapacities(@RequestBody createPlanningCapacityDto: CreatePlanningCapacityDto): ResponseEntity<List<CapacityDto>> {
-        val result = capacityService.createPlanningCapacities(createPlanningCapacityDto)
+        val result = capacityService.upsertPlanningCapacities(createPlanningCapacityDto)
         return ResponseEntity(result, HttpStatus.CREATED)
     }
 

@@ -7,7 +7,7 @@ import com.kindercentrum.planner.features.locations.model.mapper.LocationMapper
 import com.kindercentrum.planner.features.locations.repository.LocationRepository
 import org.springframework.dao.DuplicateKeyException
 import org.springframework.stereotype.Service
-import java.util.UUID
+import java.util.*
 
 @Service
 class LocationService(
@@ -49,6 +49,12 @@ class LocationService(
         if (existingLocation.isNotEmpty()) {
             throw LocationDuplicateKeyException("Location with name ${name} already exists")
         }
+    }
+
+    fun getLocationById(id: UUID): Location {
+        val location = locationRepository.findByIdAndActiveIsTrue(id)
+            ?: throw LocationNotFoundException("Location with id: $id not found")
+        return location
     }
 }
 
