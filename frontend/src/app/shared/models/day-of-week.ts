@@ -10,6 +10,14 @@ interface DayOfWeek {
   assignments: Assignment[];
 }
 
+enum DayOfWeekEnum {
+  MON = 'MON',
+  TUE = 'TUE',
+  WED = 'WED',
+  THU = 'THU',
+  FRI = 'FRI',
+}
+
 const WEEKDAY: ReadonlyArray<DayOfWeek> = [
   { key: 'MON', label: 'Monday', short: 'Mon', capacity: { max: 10 }, assignments: [] },
   { key: 'TUE', label: 'Tuesday', short: 'Tue', capacity: { max: 10 }, assignments: [] },
@@ -18,4 +26,4 @@ const WEEKDAY: ReadonlyArray<DayOfWeek> = [
   { key: 'FRI', label: 'Friday', short: 'Fri', capacity: { max: 10 }, assignments: [] },
 ];
 
-export { type DayOfWeek, WEEKDAY };
+export { type DayOfWeek, DayOfWeekEnum, WEEKDAY };
