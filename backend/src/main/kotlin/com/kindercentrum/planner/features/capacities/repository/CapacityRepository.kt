@@ -1,6 +1,6 @@
 package com.kindercentrum.planner.features.capacities.repository
 
-import com.kindercentrum.planner.features.assignments.model.enum.DayOfWeek
+import com.kindercentrum.planner.features.assignments.model.enums.DayOfWeek
 import com.kindercentrum.planner.features.capacities.model.entity.Capacity
 import org.springframework.data.repository.CrudRepository
 import org.springframework.stereotype.Repository

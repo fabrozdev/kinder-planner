@@ -1,6 +1,6 @@
 package com.kindercentrum.planner.features.assignments.model.entity
 
-import com.kindercentrum.planner.features.assignments.model.enum.DayOfWeek
+import com.kindercentrum.planner.features.assignments.model.enums.DayOfWeek
 import com.kindercentrum.planner.features.children.model.entity.Child
 import com.kindercentrum.planner.features.locations.model.entity.Location
 import com.kindercentrum.planner.features.planning.model.entity.Planning

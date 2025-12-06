@@ -1,6 +1,6 @@
 package com.kindercentrum.planner.features.capacities.model.dto
 
-import com.kindercentrum.planner.features.assignments.model.enum.DayOfWeek
+import com.kindercentrum.planner.features.assignments.model.enums.DayOfWeek
 import jakarta.validation.constraints.Max
 import jakarta.validation.constraints.Min
 import java.util.*

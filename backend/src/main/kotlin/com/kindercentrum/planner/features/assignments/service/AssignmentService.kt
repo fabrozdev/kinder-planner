@@ -3,7 +3,7 @@ package com.kindercentrum.planner.features.assignments.service
 import com.kindercentrum.planner.features.assignments.model.dto.AssignmentDto
 import com.kindercentrum.planner.features.assignments.model.dto.CreateAssignmentDto
 import com.kindercentrum.planner.features.assignments.model.entity.Assignment
-import com.kindercentrum.planner.features.assignments.model.enum.DayOfWeek
+import com.kindercentrum.planner.features.assignments.model.enums.DayOfWeek
 import com.kindercentrum.planner.features.assignments.model.mapper.AssignmentMapper
 import com.kindercentrum.planner.features.assignments.repository.AssignmentRepository
 import com.kindercentrum.planner.features.children.repository.ChildRepository
