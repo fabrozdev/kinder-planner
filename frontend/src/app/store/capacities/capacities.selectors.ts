@@ -1,8 +1,7 @@
 import { createFeatureSelector, createSelector } from '@ngrx/store';
 import { CapacitiesState, capacitiesAdapter } from './capacities.state';
 
-export const selectCapacitiesState =
-  createFeatureSelector<CapacitiesState>('capacities');
+export const selectCapacitiesState = createFeatureSelector<CapacitiesState>('capacities');
 
 export const {
   selectIds: selectCapacityIds,
@@ -13,34 +12,23 @@ export const {
 
 export const selectCapacitiesLoading = createSelector(
   selectCapacitiesState,
-  (state) => state.loading
+  (state) => state.loading,
 );
 
-export const selectCapacitiesError = createSelector(
-  selectCapacitiesState,
-  (state) => state.error
-);
+export const selectCapacitiesError = createSelector(selectCapacitiesState, (state) => state.error);
 
 export const selectDraftCapacities = createSelector(
   selectCapacitiesState,
-  (state) => state.draftCapacities
+  (state) => state.draftCapacities,
 );
 
-export const selectCapacitiesByPlanningAndLocation = (
-  planningId: string,
-  locationId: string
-) =>
+export const selectCapacitiesByPlanningAndLocation = (planningId: string, locationId: string) =>
   createSelector(selectAllCapacities, (capacities) =>
-    capacities.filter(
-      (c) => c.planningId === planningId && c.locationId === locationId
-    )
+    capacities.filter((c) => c.planningId === planningId && c.locationId === locationId),
   );
 
-export const selectCapacitiesLoadingByPlanningLocation = (
-  planningId: string,
-  locationId: string
-) =>
-  createSelector(
-    selectCapacitiesState,
-    (state) => state.loadingByPlanningLocation[`${planningId}-${locationId}`] ?? false
-  );
+export const selectCapacitiesLoadingByPlanningLocation = (planningId: string, locationId: string) =>
+  createSelector(selectCapacitiesState, (state) => {
+    console.log(state);
+    return state.loadingByPlanningLocation[`${planningId}-${locationId}`] ?? false;
+  });

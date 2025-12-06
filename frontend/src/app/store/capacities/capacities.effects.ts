@@ -12,6 +12,35 @@ export class CapacitiesEffects {
   private capacitiesService = inject(CapacitiesService);
   private messageService = inject(MessageService);
 
+  loadCapacitiesByPlanningAndLocation$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(CapacitiesActions.loadCapacitiesByPlanningAndLocation),
+      switchMap(({ planningId, locationId }) =>
+        this.capacitiesService.getCapacitiesOfWeekByPlanningAndLocationId(planningId, locationId).pipe(
+          map((capacities) =>
+            CapacitiesActions.loadCapacitiesByPlanningAndLocationSuccess({
+              capacities: capacities as unknown as Record<any, any>,
+              planningId,
+              locationId,
+            }),
+          ),
+          catchError((error) => {
+            this.messageService.add({
+              severity: 'error',
+              summary: 'Error',
+              detail: 'Failed to load capacities',
+            });
+            return of(
+              CapacitiesActions.loadCapacitiesByPlanningAndLocationFailure({
+                error: error.message || 'Failed to load capacities',
+              }),
+            );
+          }),
+        ),
+      ),
+    ),
+  );
+
   createCapacitiesByPlanningId$ = createEffect(() =>
     this.actions$.pipe(
       ofType(CapacitiesActions.createCapacitiesByPlanningId),

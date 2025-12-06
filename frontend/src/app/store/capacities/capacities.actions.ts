@@ -11,6 +11,26 @@ export const resetDraftCapacities = createAction(
   '[Capacities] Reset Draft Capacities',
 );
 
+export const loadDraftCapacitiesFromMap = createAction(
+  '[Capacities] Load Draft Capacities From Map',
+  props<{ capacities: Record<DayOfWeekEnum, Capacity> }>(),
+);
+
+export const loadCapacitiesByPlanningAndLocation = createAction(
+  '[Capacities] Load Capacities By Planning And Location',
+  props<{ planningId: string; locationId: string }>(),
+);
+
+export const loadCapacitiesByPlanningAndLocationSuccess = createAction(
+  '[Capacities] Load Capacities By Planning And Location Success',
+  props<{ capacities: Record<DayOfWeekEnum, Capacity>; planningId: string; locationId: string }>(),
+);
+
+export const loadCapacitiesByPlanningAndLocationFailure = createAction(
+  '[Capacities] Load Capacities By Planning And Location Failure',
+  props<{ error: string }>(),
+);
+
 export const createCapacitiesByPlanningId = createAction(
   '[Capacities] Create Capacities By Planning Id',
   props<{ dto: CreatePlanningCapacity }>(),

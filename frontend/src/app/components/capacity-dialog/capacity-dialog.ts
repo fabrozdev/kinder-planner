@@ -1,19 +1,22 @@
-import { Component, input, model, inject } from '@angular/core';
+import { Component, input, model, inject, effect, computed } from '@angular/core';
 import { Dialog } from 'primeng/dialog';
 import { ButtonModule } from 'primeng/button';
 import { CapacityConfiguration } from '@/app/features/capacity/components/capacity-configuration/capacity-configuration';
 import { Location } from '@/app/shared/models/location';
 import { Store } from '@ngrx/store';
-import { createCapacitiesByPlanningId, resetDraftCapacities, selectDraftCapacities } from '@/app/store/capacities';
+import {
+  createCapacitiesByPlanningId,
+  resetDraftCapacities,
+  selectDraftCapacities,
+  loadCapacitiesByPlanningAndLocation,
+  selectCapacitiesLoadingByPlanningLocation,
+} from '@/app/store/capacities';
 import { DayOfWeekEnum } from '@/app/shared/models/day-of-week';
+import { Skeleton } from 'primeng/skeleton';
 
 @Component({
   selector: 'app-capacity-dialog',
-  imports: [
-    Dialog,
-    ButtonModule,
-    CapacityConfiguration,
-  ],
+  imports: [Dialog, ButtonModule, CapacityConfiguration, Skeleton],
   templateUrl: './capacity-dialog.html',
   standalone: true,
 })
@@ -25,6 +28,26 @@ export class CapacityDialog {
   visible = model.required<boolean>();
 
   private draftCapacities = this.store.selectSignal(selectDraftCapacities);
+
+  loading = computed(() => {
+    const planningId = this.planningId();
+    const locationId = this.location().id;
+    return this.store.selectSignal(
+      selectCapacitiesLoadingByPlanningLocation(planningId, locationId),
+    )();
+  });
+
+  constructor() {
+    effect(() => {
+      const visible = this.visible();
+      const planningId = this.planningId();
+      const locationId = this.location().id;
+
+      if (visible) {
+        this.store.dispatch(loadCapacitiesByPlanningAndLocation({ planningId, locationId }));
+      }
+    });
+  }
 
   close() {
     this.store.dispatch(resetDraftCapacities());

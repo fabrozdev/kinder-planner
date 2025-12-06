@@ -1,7 +1,7 @@
 import { Assignment } from '@/app/shared/models/assignment';
 
 interface DayOfWeek {
-  key: string;
+  key: DayOfWeekEnum;
   label: string;
   short: string;
   capacity?: {
@@ -19,11 +19,29 @@ enum DayOfWeekEnum {
 }
 
 const WEEKDAY: ReadonlyArray<DayOfWeek> = [
-  { key: 'MON', label: 'Monday', short: 'Mon', capacity: { max: 10 }, assignments: [] },
-  { key: 'TUE', label: 'Tuesday', short: 'Tue', capacity: { max: 10 }, assignments: [] },
-  { key: 'WED', label: 'Wednesday', short: 'Wed', capacity: { max: 10 }, assignments: [] },
-  { key: 'THU', label: 'Thursday', short: 'Thu', capacity: { max: 10 }, assignments: [] },
-  { key: 'FRI', label: 'Friday', short: 'Fri', capacity: { max: 10 }, assignments: [] },
+  { key: DayOfWeekEnum.MON, label: 'Monday', short: 'Mon', capacity: { max: 10 }, assignments: [] },
+  {
+    key: DayOfWeekEnum.TUE,
+    label: 'Tuesday',
+    short: 'Tue',
+    capacity: { max: 10 },
+    assignments: [],
+  },
+  {
+    key: DayOfWeekEnum.WED,
+    label: 'Wednesday',
+    short: 'Wed',
+    capacity: { max: 10 },
+    assignments: [],
+  },
+  {
+    key: DayOfWeekEnum.THU,
+    label: 'Thursday',
+    short: 'Thu',
+    capacity: { max: 10 },
+    assignments: [],
+  },
+  { key: DayOfWeekEnum.FRI, label: 'Friday', short: 'Fri', capacity: { max: 10 }, assignments: [] },
 ];
 
 export { type DayOfWeek, DayOfWeekEnum, WEEKDAY };

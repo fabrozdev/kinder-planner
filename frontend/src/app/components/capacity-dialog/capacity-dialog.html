@@ -4,9 +4,18 @@
   [modal]="true"
   [style]="{ width: '500px', minHeight: '200px' }"
 >
-  <app-capacity-configuration />
+  @if (loading()) {
+    <div class="flex flex-col gap-2">
+      @for (_ of [1, 2, 3, 4, 5]; track $index) {
+        <p-skeleton height="48px" />
+      }
+    </div>
+  } @else {
+    <app-capacity-configuration />
+  }
+
   <ng-template #footer>
     <p-button label="Close" (onClick)="close()" />
-    <p-button label="Save" (onClick)="save()" severity="success" />
+    <p-button label="Save" (onClick)="save()" severity="success" [disabled]="loading()" />
   </ng-template>
 </p-dialog>
