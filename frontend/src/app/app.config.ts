@@ -17,9 +17,11 @@ import { locationsReducer, LocationsEffects } from './store/locations';
 import { childrenReducer, ChildrenEffects } from './store/children';
 import { assignmentsReducer, AssignmentsEffects } from './store/assignments';
 import { planningsReducer, PlanningsEffects } from './store/plannings';
+import { capacitiesReducer, CapacitiesEffects } from './store/capacities';
 import { providePrimeNG } from 'primeng/config';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { Theme } from './core/config/theme.config';
+import { MessageService } from 'primeng/api';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -28,13 +30,15 @@ export const appConfig: ApplicationConfig = {
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),
     { provide: API_BASE_URL, useValue: 'http://localhost:8080/api' },
+    MessageService,
     provideStore({
       locations: locationsReducer,
       children: childrenReducer,
       assignments: assignmentsReducer,
       plannings: planningsReducer,
+      capacities: capacitiesReducer,
     }),
-    provideEffects([LocationsEffects, ChildrenEffects, AssignmentsEffects, PlanningsEffects]),
+    provideEffects([LocationsEffects, ChildrenEffects, AssignmentsEffects, PlanningsEffects, CapacitiesEffects]),
     provideAnimationsAsync(),
     provideStoreDevtools({
       maxAge: 25,

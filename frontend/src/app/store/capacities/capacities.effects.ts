@@ -16,7 +16,7 @@ export class CapacitiesEffects {
     this.actions$.pipe(
       ofType(CapacitiesActions.createCapacitiesByPlanningId),
       switchMap(({ dto }) =>
-        this.capacitiesService.createCapacitiesByPlanningId(dto).pipe(
+        this.capacitiesService.upsertCapacitiesByPlanningId(dto).pipe(
           map((capacities) =>
             CapacitiesActions.createCapacitiesByPlanningIdSuccess({
               capacities,

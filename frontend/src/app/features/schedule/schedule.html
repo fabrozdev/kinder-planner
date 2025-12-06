@@ -1,10 +1,10 @@
-@if (location()) {
+@if (location() && planning()) {
   <p-card>
     <ng-template #title>
       <div class="flex justify-between w-full">
         <h3 class="text-3xl font-medium">{{ location().name }}</h3>
         <div class="flex gap-2">
-          <app-capacity [location]="location()" />
+          <app-capacity [location]="location()" [planningId]="planning()!.id" />
           <p-button icon="pi pi-copy" [rounded]="true" [text]="true" />
         </div>
       </div>

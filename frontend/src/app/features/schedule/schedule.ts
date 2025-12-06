@@ -4,7 +4,7 @@ import { Location } from '@/app/shared/models/location';
 import { Capacity } from '@/app/features/capacity/capacity';
 import { DayOfWeek, WEEKDAY } from '@/app/shared/models/day-of-week';
 import { Store } from '@ngrx/store';
-import { loadPlanning, selectPlanningsLoading } from '@/app/store/plannings';
+import { loadPlanning, selectPlanningsLoading, selectPlanningByLocation } from '@/app/store/plannings';
 import { selectAllAssignments } from '@/app/store/assignments';
 import { Assignment } from '@/app/shared/models/assignment';
 import { ButtonModule } from 'primeng/button';
@@ -21,6 +21,11 @@ export class Schedule {
   location = input.required<Location>();
 
   private allAssignments = this.store.selectSignal(selectAllAssignments);
+
+  planning = computed(() => {
+    const locationId = this.location().id;
+    return this.store.selectSignal(selectPlanningByLocation(locationId))();
+  });
 
   daysOfWeek = computed<DayOfWeek[]>(() => {
     const locationId = this.location().id;

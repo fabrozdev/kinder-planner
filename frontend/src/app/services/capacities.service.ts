@@ -2,6 +2,7 @@ import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Assignment, CreateAssignment } from '@/app/shared/models/assignment';
+import { Capacity, CreatePlanningCapacity } from '@/app/shared/models/capacity';
 
 @Injectable({
   providedIn: 'root',
@@ -9,11 +10,7 @@ import { Assignment, CreateAssignment } from '@/app/shared/models/assignment';
 export class CapacitiesService {
   private readonly http = inject(HttpClient);
 
-  createCapacity(assignmentDto: CreateAssignment): Observable<Assignment> {
-    return this.http.post<Assignment>(`/capacities`, assignmentDto);
-  }
-
-  editCapacity(assignmentDto: CreateAssignment): Observable<Assignment> {
-    return this.http.post<Assignment>(`/capacities`, assignmentDto);
+  upsertCapacitiesByPlanningId(planningCapacity: CreatePlanningCapacity): Observable<Capacity[]> {
+    return this.http.post<Capacity[]>(`/capacities/planning`, planningCapacity);
   }
 }

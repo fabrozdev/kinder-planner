@@ -10,6 +10,7 @@ import { ButtonModule } from 'primeng/button';
 })
 export class Capacity {
   location = input.required<Location>();
+  planningId = input.required<string>();
   capacityDialogVisible = signal(false);
 
   openDialog() {
