@@ -1,22 +1,22 @@
 import { inject, Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { of } from 'rxjs';
-import { map, catchError, switchMap, tap } from 'rxjs/operators';
+import { catchError, map, switchMap, tap } from 'rxjs/operators';
 import * as CapacitiesActions from './capacities.actions';
-import { CapacitiesService } from '../../services/capacities.service';
 import { MessageService } from 'primeng/api';
+import { PlannerService } from '@/app/services/planner.service';
 
 @Injectable()
 export class CapacitiesEffects {
   private actions$ = inject(Actions);
-  private capacitiesService = inject(CapacitiesService);
+  private planningService = inject(PlannerService);
   private messageService = inject(MessageService);
 
   loadCapacitiesByPlanningAndLocation$ = createEffect(() =>
     this.actions$.pipe(
       ofType(CapacitiesActions.loadCapacitiesByPlanningAndLocation),
       switchMap(({ planningId, locationId }) =>
-        this.capacitiesService.getCapacitiesOfWeekByPlanningAndLocationId(planningId, locationId).pipe(
+        this.planningService.getPlanningCapacityByLocationId(planningId, locationId).pipe(
           map((capacities) =>
             CapacitiesActions.loadCapacitiesByPlanningAndLocationSuccess({
               capacities: capacities as unknown as Record<any, any>,
@@ -45,7 +45,7 @@ export class CapacitiesEffects {
     this.actions$.pipe(
       ofType(CapacitiesActions.createCapacitiesByPlanningId),
       switchMap(({ dto }) =>
-        this.capacitiesService.upsertCapacitiesByPlanningId(dto).pipe(
+        this.planningService.upsertPlanningCapacity(dto).pipe(
           map((capacities) =>
             CapacitiesActions.createCapacitiesByPlanningIdSuccess({
               capacities,
