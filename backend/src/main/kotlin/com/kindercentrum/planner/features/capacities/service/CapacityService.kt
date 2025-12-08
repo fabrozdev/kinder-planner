@@ -3,6 +3,7 @@ package com.kindercentrum.planner.features.capacities.service
 import com.kindercentrum.planner.features.assignments.model.enums.DayOfWeek
 import com.kindercentrum.planner.features.capacities.model.dto.CapacityDto
 import com.kindercentrum.planner.features.capacities.model.dto.CreatePlanningCapacityDto
+import com.kindercentrum.planner.features.capacities.model.dto.WeeklyCapacityDto
 import com.kindercentrum.planner.features.capacities.model.entity.Capacity
 import com.kindercentrum.planner.features.capacities.model.mapper.CapacityMapper
 import com.kindercentrum.planner.features.capacities.repository.CapacityRepository
@@ -17,26 +18,17 @@ import java.util.*
 @Service
 class CapacityService(
     private val capacityRepository: CapacityRepository,
-    private val planningService: PlanningService,
-    private val locationService: LocationService
 ) {
+    fun getWeeklyCapacityByPlanningAndLocationId(planningId: UUID, locationId: UUID): WeeklyCapacityDto {
+        val capacities = getCapacitiesByDayOfWeek(planningId, locationId)
+        return capacities.mapValues { (_, capacity) -> CapacityMapper.INSTANCE.toDto(capacity) }
+    }
 
-    fun getCapacitiesByPlanningId(planningId: UUID): List<CapacityDto> =
-        capacityRepository.findByPlanningId(planningId)
-            .map(CapacityMapper.INSTANCE::toDto)
-
-    fun getCapacitiesByLocationId(locationId: UUID): List<CapacityDto> =
-        capacityRepository.findByLocationId(locationId)
-            .map(CapacityMapper.INSTANCE::toDto)
-
-    fun getCapacitiesByPlanningAndLocation(planningId: UUID, locationId: UUID): List<Capacity> =
+    fun getCapacitiesByPlanningAndLocationId(planningId: UUID, locationId: UUID): List<Capacity> =
         capacityRepository.findByPlanningIdAndLocationId(planningId, locationId)
 
     @Transactional
-    fun upsertPlanningCapacities(createPlanningCapacityDto: CreatePlanningCapacityDto): List<CapacityDto> {
-        val planning = planningService.getPlanningById(createPlanningCapacityDto.planningId)
-        val location = locationService.getLocationById(createPlanningCapacityDto.locationId)
-
+    fun upsertPlanningCapacity(createPlanningCapacityDto: CreatePlanningCapacityDto, planning: Planning, location: Location): List<CapacityDto> {
         val existingCapacitiesMap = getCapacitiesByDayOfWeek(createPlanningCapacityDto.planningId, createPlanningCapacityDto.locationId)
 
         val capacitiesToSave = upsertCapacities(createPlanningCapacityDto, existingCapacitiesMap, planning, location)
@@ -46,7 +38,7 @@ class CapacityService(
     }
 
     fun getCapacitiesByDayOfWeek(planningId: UUID, locationId: UUID): Map<DayOfWeek, Capacity> {
-        val existingCapacities = getCapacitiesByPlanningAndLocation(
+        val existingCapacities = getCapacitiesByPlanningAndLocationId(
             planningId,
             locationId
         )

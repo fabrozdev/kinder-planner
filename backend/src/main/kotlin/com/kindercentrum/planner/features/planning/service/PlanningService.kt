@@ -1,7 +1,12 @@
 package com.kindercentrum.planner.features.planning.service
 
 import com.kindercentrum.planner.features.assignments.service.AssignmentService
+import com.kindercentrum.planner.features.capacities.model.dto.CapacityDto
+import com.kindercentrum.planner.features.capacities.model.dto.CreatePlanningCapacityDto
+import com.kindercentrum.planner.features.capacities.model.dto.WeeklyCapacityDto
+import com.kindercentrum.planner.features.capacities.service.CapacityService
 import com.kindercentrum.planner.features.locations.repository.LocationRepository
+import com.kindercentrum.planner.features.locations.service.LocationService
 import com.kindercentrum.planner.features.planning.mapper.PlanningMapper
 import com.kindercentrum.planner.features.planning.model.dto.CreatePlanningDto
 import com.kindercentrum.planner.features.planning.model.dto.PlanningDto
@@ -17,8 +22,10 @@ import java.util.*
 @Service
 class PlanningService(
     private val planningRepository: PlanningRepository,
+    private val locationService: LocationService,
     private val locationRepository: LocationRepository,
     private val assignmentService: AssignmentService,
+    private val capacityService: CapacityService,
 ) {
     fun getPlanning(locationId: UUID): PlanningDto {
         val now = LocalDate.now()
@@ -37,6 +44,8 @@ class PlanningService(
             ?: throw PlanningNotFoundException("Planning for $year-$month at location $locationId not found")
         val planningId = planning.id ?: throw IllegalStateException("Planning should have an ID")
 
+        val weekCapacity = capacityService.getWeeklyCapacityByPlanningAndLocationId(planningId, locationId)
+
         val assignments = assignmentService.getAssignmentsByPlanningIdAndLocationId(planningId, locationId)
 
         val planningDto = PlanningMapper.INSTANCE.toDto(planning)
@@ -47,7 +56,8 @@ class PlanningService(
             month = planningDto.month,
             locationId = planningDto.locationId,
             label = planningDto.label,
-            assignments = assignments
+            assignments = assignments,
+            weekCapacity = weekCapacity
         )
     }
 
@@ -77,6 +87,19 @@ class PlanningService(
         ))
         return PlanningMapper.INSTANCE.toDto(planning)
     }
+
+    fun upsertPlanningCapacity(createPlanningCapacityDto: CreatePlanningCapacityDto): List<CapacityDto> {
+        val planning = getPlanningById(createPlanningCapacityDto.planningId)
+        val location = locationService.getLocationById(createPlanningCapacityDto.locationId)
+        return capacityService.upsertPlanningCapacity(createPlanningCapacityDto, planning, location)
+    }
+
+    fun getPlanningCapacityByLocationId(planningId: UUID, locationId: UUID): WeeklyCapacityDto {
+        getPlanningById(planningId)
+        locationService.getLocationById(locationId)
+        return capacityService.getWeeklyCapacityByPlanningAndLocationId(planningId,locationId)
+    }
+
 
     fun delete(id: UUID): Boolean {
         val planning = planningRepository.findByIdAndDeletedAtIsNull(id)

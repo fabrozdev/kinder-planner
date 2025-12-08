@@ -1,6 +1,7 @@
 package com.kindercentrum.planner.features.planning.model.dto
 
 import com.kindercentrum.planner.features.assignments.model.dto.AssignmentDto
+import com.kindercentrum.planner.features.capacities.model.dto.WeeklyCapacityDto
 
 data class PlanningWithAssignmentDto(
     val id: String,
@@ -9,4 +10,5 @@ data class PlanningWithAssignmentDto(
     val locationId: String,
     val label: String,
     val assignments: List<AssignmentDto>,
+    val weekCapacity: WeeklyCapacityDto
 )
