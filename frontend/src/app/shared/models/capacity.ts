@@ -21,4 +21,4 @@ interface Capacity {
   updatedAt: Date;
 }
 
-export type { CreatePlanningCapacity, Capacity };
+export type { CreatePlanningCapacity, Capacity, DayCapacity };

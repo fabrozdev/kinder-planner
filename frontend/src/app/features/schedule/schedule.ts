@@ -4,7 +4,11 @@ import { Location } from '@/app/shared/models/location';
 import { Capacity } from '@/app/features/capacity/capacity';
 import { DayOfWeek, WEEKDAY } from '@/app/shared/models/day-of-week';
 import { Store } from '@ngrx/store';
-import { loadPlanning, selectPlanningsLoading, selectPlanningByLocation } from '@/app/store/plannings';
+import {
+  loadPlanning,
+  selectPlanningsLoading,
+  selectPlanningByLocation,
+} from '@/app/store/plannings';
 import { selectAllAssignments } from '@/app/store/assignments';
 import { Assignment } from '@/app/shared/models/assignment';
 import { ButtonModule } from 'primeng/button';
@@ -30,6 +34,7 @@ export class Schedule {
   daysOfWeek = computed<DayOfWeek[]>(() => {
     const locationId = this.location().id;
     const allAssignments = this.allAssignments();
+    const weekCapacity = this.planning()?.weekCapacity;
 
     const assignments = allAssignments.filter((a) => a.locationId === locationId);
 
@@ -46,6 +51,7 @@ export class Schedule {
       assignments: (dayMap.get(index) || []).sort((a, b) =>
         a.child.firstName.localeCompare(b.child.firstName),
       ),
+      capacity: { max: weekCapacity?.[day.key].maxChildren ?? 10 },
     }));
   });
 
@@ -54,9 +60,15 @@ export class Schedule {
   constructor() {
     effect(() => {
       const location = this.location();
-
+      const date = new Date();
       if (location) {
-        this.store.dispatch(loadPlanning({ locationId: location.id, month: 11, year: 2025 }));
+        this.store.dispatch(
+          loadPlanning({
+            locationId: location.id,
+            month: date.getMonth() + 1,
+            year: date.getFullYear(),
+          }),
+        );
       }
     });
   }
