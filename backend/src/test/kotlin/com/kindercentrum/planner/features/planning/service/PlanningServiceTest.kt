@@ -2,9 +2,11 @@ package com.kindercentrum.planner.features.planning.service
 
 import com.kindercentrum.planner.features.assignments.model.dto.AssignmentDto
 import com.kindercentrum.planner.features.assignments.service.AssignmentService
+import com.kindercentrum.planner.features.capacities.service.CapacityService
 import com.kindercentrum.planner.features.children.model.dto.ChildDto
 import com.kindercentrum.planner.features.locations.model.entity.Location
-import com.kindercentrum.planner.features.locations.repository.LocationRepository
+import com.kindercentrum.planner.features.locations.service.LocationNotFoundException
+import com.kindercentrum.planner.features.locations.service.LocationService
 import com.kindercentrum.planner.features.planning.model.dto.CreatePlanningDto
 import com.kindercentrum.planner.features.planning.model.entity.Planning
 import com.kindercentrum.planner.features.planning.repository.PlanningRepository
@@ -21,8 +23,9 @@ import kotlin.test.Test
 
 class PlanningServiceTest {
     private val planningRepository = mockk<PlanningRepository>()
-    private val locationRepository = mockk<LocationRepository>()
+    private val locationService = mockk<LocationService>()
     private val assignmentService = mockk<AssignmentService>()
+    private val capacityService = mockk<CapacityService>()
     private lateinit var planningService: PlanningService
 
     private val testPlanningId = UUID.fromString("11111111-2222-3333-4444-555555555555")
@@ -37,7 +40,7 @@ class PlanningServiceTest {
 
     @BeforeEach
     fun setUp() {
-        planningService = PlanningService(planningRepository, locationRepository, assignmentService)
+        planningService = PlanningService(planningRepository, locationService, assignmentService, capacityService)
     }
 
     @Test
@@ -72,7 +75,7 @@ class PlanningServiceTest {
         )
 
         every { planningRepository.findByYearAndMonthAndLocationIdAndDeletedAtIsNull(2025, 3, testLocationId) } returns null
-        every { locationRepository.findById(testLocationId) } returns Optional.of(testLocation)
+        every { locationService.getLocationById(testLocationId) } returns testLocation
         every { planningRepository.save(any<Planning>()) } answers {
             val planning = firstArg<Planning>()
             planning.copy(id = generatedPlanningId)
@@ -87,7 +90,7 @@ class PlanningServiceTest {
         assertNotNull(result.id)
 
         verify { planningRepository.findByYearAndMonthAndLocationIdAndDeletedAtIsNull(2025, 3, testLocationId) }
-        verify { locationRepository.findById(testLocationId) }
+        verify { locationService.getLocationById(testLocationId) }
         verify { planningRepository.save(any<Planning>()) }
     }
 
@@ -116,7 +119,7 @@ class PlanningServiceTest {
 
         assertEquals("Planning for 2025-3 at location $testLocationId already exists", exception.message)
         verify { planningRepository.findByYearAndMonthAndLocationIdAndDeletedAtIsNull(2025, 3, testLocationId) }
-        verify(exactly = 0) { locationRepository.findById(any()) }
+        verify(exactly = 0) { locationService.getLocationById(any()) }
         verify(exactly = 0) { planningRepository.save(any()) }
     }
 
@@ -131,7 +134,7 @@ class PlanningServiceTest {
 
         // No active planning exists for this location (deleted one doesn't count)
         every { planningRepository.findByYearAndMonthAndLocationIdAndDeletedAtIsNull(2025, 3, testLocationId) } returns null
-        every { locationRepository.findById(testLocationId) } returns Optional.of(testLocation)
+        every { locationService.getLocationById(testLocationId) } returns testLocation
         every { planningRepository.save(any<Planning>()) } answers {
             val planning = firstArg<Planning>()
             planning.copy(id = generatedPlanningId)
@@ -144,7 +147,7 @@ class PlanningServiceTest {
         assertEquals("New March 2025", result.label)
 
         verify { planningRepository.findByYearAndMonthAndLocationIdAndDeletedAtIsNull(2025, 3, testLocationId) }
-        verify { locationRepository.findById(testLocationId) }
+        verify { locationService.getLocationById(testLocationId) }
         verify { planningRepository.save(any<Planning>()) }
     }
 
@@ -158,7 +161,7 @@ class PlanningServiceTest {
         )
 
         every { planningRepository.findByYearAndMonthAndLocationIdAndDeletedAtIsNull(2025, 4, testLocationId) } returns null
-        every { locationRepository.findById(testLocationId) } returns Optional.empty()
+        every { locationService.getLocationById(testLocationId) } throws LocationNotFoundException("Location with id $testLocationId not found")
 
         val exception = assertThrows<LocationNotFoundException> {
             planningService.create(createDto)
@@ -166,7 +169,7 @@ class PlanningServiceTest {
 
         assertEquals("Location with id $testLocationId not found", exception.message)
         verify { planningRepository.findByYearAndMonthAndLocationIdAndDeletedAtIsNull(2025, 4, testLocationId) }
-        verify { locationRepository.findById(testLocationId) }
+        verify { locationService.getLocationById(testLocationId) }
         verify(exactly = 0) { planningRepository.save(any()) }
     }
 
@@ -265,6 +268,7 @@ class PlanningServiceTest {
         )
 
         every { planningRepository.findPlanningByYearAndMonthAndLocationIdAndDeletedAtIsNull(2025, 6, testLocationId) } returns planning
+        every { capacityService.getWeeklyCapacityByPlanningAndLocationId(testPlanningId, testLocationId) } returns emptyMap()
         every { assignmentService.getAssignmentsByPlanningIdAndLocationId(testPlanningId, testLocationId) } returns assignments
 
         val result = planningService.getPlanningByMonthAndYearAndLocationId(6, 2025, testLocationId)
@@ -278,6 +282,7 @@ class PlanningServiceTest {
         assertEquals(assignments, result.assignments)
 
         verify { planningRepository.findPlanningByYearAndMonthAndLocationIdAndDeletedAtIsNull(2025, 6, testLocationId) }
+        verify { capacityService.getWeeklyCapacityByPlanningAndLocationId(testPlanningId, testLocationId) }
         verify { assignmentService.getAssignmentsByPlanningIdAndLocationId(testPlanningId, testLocationId) }
     }
 
@@ -292,6 +297,7 @@ class PlanningServiceTest {
         )
 
         every { planningRepository.findPlanningByYearAndMonthAndLocationIdAndDeletedAtIsNull(2025, 7, testLocationId) } returns planning
+        every { capacityService.getWeeklyCapacityByPlanningAndLocationId(testPlanningId, testLocationId) } returns emptyMap()
         every { assignmentService.getAssignmentsByPlanningIdAndLocationId(testPlanningId, testLocationId) } returns emptyList()
 
         val result = planningService.getPlanningByMonthAndYearAndLocationId(7, 2025, testLocationId)
@@ -304,6 +310,7 @@ class PlanningServiceTest {
         assertEquals(0, result.assignments.size)
 
         verify { planningRepository.findPlanningByYearAndMonthAndLocationIdAndDeletedAtIsNull(2025, 7, testLocationId) }
+        verify { capacityService.getWeeklyCapacityByPlanningAndLocationId(testPlanningId, testLocationId) }
         verify { assignmentService.getAssignmentsByPlanningIdAndLocationId(testPlanningId, testLocationId) }
     }
 

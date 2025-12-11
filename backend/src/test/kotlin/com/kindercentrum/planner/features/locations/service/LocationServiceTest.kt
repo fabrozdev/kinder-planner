@@ -14,7 +14,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.assertNotNull
 import org.junit.jupiter.api.assertThrows
 import java.time.Instant
-import java.util.UUID
+import java.util.*
 import kotlin.test.Test
 
 class LocationServiceTest {
@@ -187,7 +187,7 @@ class LocationServiceTest {
 
         assertTrue(result)
         verify { locationRepository.findByIdAndActiveIsTrue(id) }
-        verify { locationRepository.save(match { it.active == false }) }
+        verify { locationRepository.save(match { !it.active }) }
     }
 
     @Test

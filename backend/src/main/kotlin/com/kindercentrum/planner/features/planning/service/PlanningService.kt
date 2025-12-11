@@ -5,7 +5,6 @@ import com.kindercentrum.planner.features.capacities.model.dto.CapacityDto
 import com.kindercentrum.planner.features.capacities.model.dto.CreatePlanningCapacityDto
 import com.kindercentrum.planner.features.capacities.model.dto.WeeklyCapacityDto
 import com.kindercentrum.planner.features.capacities.service.CapacityService
-import com.kindercentrum.planner.features.locations.repository.LocationRepository
 import com.kindercentrum.planner.features.locations.service.LocationService
 import com.kindercentrum.planner.features.planning.mapper.PlanningMapper
 import com.kindercentrum.planner.features.planning.model.dto.CreatePlanningDto
@@ -23,7 +22,6 @@ import java.util.*
 class PlanningService(
     private val planningRepository: PlanningRepository,
     private val locationService: LocationService,
-    private val locationRepository: LocationRepository,
     private val assignmentService: AssignmentService,
     private val capacityService: CapacityService,
 ) {
@@ -76,8 +74,7 @@ class PlanningService(
         }
 
         // Fetch the location entity
-        val location = locationRepository.findById(planningDto.locationId)
-            .orElseThrow { LocationNotFoundException("Location with id ${planningDto.locationId} not found") }
+        val location = locationService.getLocationById(planningDto.locationId)
 
         val planning = planningRepository.save(Planning(
             year = planningDto.year,
@@ -119,6 +116,5 @@ class PlanningService(
 
 class PlanningNotFoundException(message: String) : RuntimeException(message)
 class PlanningAlreadyExistsException(message: String) : DuplicateKeyException(message)
-class LocationNotFoundException(message: String) : RuntimeException(message)
 
 

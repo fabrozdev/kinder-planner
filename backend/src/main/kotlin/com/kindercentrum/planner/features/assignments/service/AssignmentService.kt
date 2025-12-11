@@ -7,7 +7,7 @@ import com.kindercentrum.planner.features.assignments.model.enums.DayOfWeek
 import com.kindercentrum.planner.features.assignments.model.mapper.AssignmentMapper
 import com.kindercentrum.planner.features.assignments.repository.AssignmentRepository
 import com.kindercentrum.planner.features.children.repository.ChildRepository
-import com.kindercentrum.planner.features.locations.repository.LocationRepository
+import com.kindercentrum.planner.features.locations.service.LocationService
 import com.kindercentrum.planner.features.planning.repository.PlanningRepository
 import jakarta.persistence.EntityNotFoundException
 import org.springframework.cache.annotation.CacheEvict
@@ -19,7 +19,7 @@ import java.util.*
 @Service
 class AssignmentService(
     private val assignmentRepository: AssignmentRepository,
-    private val locationRepository: LocationRepository,
+    private val locationService: LocationService,
     private val childRepository: ChildRepository,
     private val planningRepository: PlanningRepository,
 ) {
@@ -34,10 +34,8 @@ class AssignmentService(
         val childId = UUID.fromString(assignmentDto.childId)
         val planningId = UUID.fromString(assignmentDto.planningId)
 
-        // Fetch the entities
-        val location = locationRepository.findById(locationId).orElseThrow {
-            EntityNotFoundException("Location with id $locationId not found")
-        }
+        val location = locationService.getLocationById(locationId);
+
         val child = childRepository.findById(childId).orElseThrow {
             EntityNotFoundException("Child with id $childId not found")
         }
@@ -90,38 +88,8 @@ class AssignmentService(
             )
         }
     }
-
-    /*fun update(id: UUID, locationDto: CreateLocationDto): LocationDto {
-        val existingLocation = assignmentRepository.findByIdAndActiveIsTrue(id)
-            ?: throw LocationNotFoundException("Location with id: $id not found")
-        verifyLocationAvailability(locationDto.name)
-
-        val updatedLocation = existingLocation.copy(
-            name = locationDto.name,
-        )
-
-        return LocationMapper.INSTANCE.toDto(assignmentRepository.save(updatedLocation))
-    }
-
-    fun delete(id: UUID): Boolean {
-        val location = assignmentRepository.findByIdAndActiveIsTrue(id)
-            ?: throw LocationNotFoundException("Location with id: $id not found")
-
-        val deleteLocation = location.copy(active = false)
-        assignmentRepository.save(deleteLocation)
-        return true
-    }
-
-    fun verifyLocationAvailability(name: String) {
-        val existingLocation = assignmentRepository.findByNameAndActiveIsTrue(name)
-        if (existingLocation.isNotEmpty()) {
-            throw LocationDuplicateKeyException("Location with name ${name} already exists")
-        }
-    }*/
 }
 
 class AssignmentDuplicateException(message: String) : DuplicateKeyException(message)
 class AssignmentNotFoundException(message: String) : EntityNotFoundException(message)
-class LocationNotFoundException(message: String) : RuntimeException(message)
-class LocationDuplicateKeyException(message: String) : DuplicateKeyException(message)
 
