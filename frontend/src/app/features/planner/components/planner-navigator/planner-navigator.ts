@@ -6,4 +6,6 @@ import { ButtonModule } from 'primeng/button';
   imports: [ButtonModule],
   templateUrl: './planner-navigator.html',
 })
-export class PlannerNavigator {}
+export class PlannerNavigator {
+  currentMonth = new Date().toLocaleString('default', { month: 'long' });
+}
