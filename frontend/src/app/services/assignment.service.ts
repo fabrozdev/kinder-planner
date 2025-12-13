@@ -9,18 +9,6 @@ import { Assignment, CreateAssignment } from '@/app/shared/models/assignment';
 export class AssignmentService {
   private readonly http = inject(HttpClient);
 
-  getAssignmentsByLocationIdAndPlanningId(
-    planningId: string,
-    locationId: string,
-  ): Observable<Assignment[]> {
-    return this.http.get<Assignment[]>(`/assignments`, {
-      params: {
-        planningId,
-        locationId,
-      },
-    });
-  }
-
   createAssignment(assignmentDto: CreateAssignment): Observable<Assignment> {
     return this.http.post<Assignment>(`/assignments`, assignmentDto);
   }
