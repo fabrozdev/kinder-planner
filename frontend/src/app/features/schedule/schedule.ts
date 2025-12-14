@@ -7,16 +7,18 @@ import { Store } from '@ngrx/store';
 import {
   loadPlanning,
   selectPlanningByLocation,
-  selectPlanningsLoading,
+  selectPlanningLoadingForLocation,
 } from '@/app/store/plannings';
 import { selectAllAssignments } from '@/app/store/assignments';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
+import { SkeletonModule } from 'primeng/skeleton';
 import { groupAssignmentsByDay, sortAssignmentsByChildName } from '@/app/features/schedule/utils';
+import { ScheduleSkeleton } from '@/app/features/schedule/components/schedule-skeleton/schedule-skeleton';
 
 @Component({
   selector: 'app-schedule',
-  imports: [Day, Capacity, ButtonModule, CardModule],
+  imports: [Day, Capacity, ButtonModule, CardModule, SkeletonModule, ScheduleSkeleton],
   templateUrl: './schedule.html',
 })
 export class Schedule {
@@ -47,7 +49,10 @@ export class Schedule {
     }));
   });
 
-  readonly loading = this.store.selectSignal(selectPlanningsLoading);
+  readonly loading = computed(() => {
+    const locationId = this.location().id;
+    return this.store.selectSignal(selectPlanningLoadingForLocation(locationId))();
+  });
 
   constructor() {
     effect(() => {

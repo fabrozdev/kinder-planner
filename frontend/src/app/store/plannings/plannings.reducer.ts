@@ -60,21 +60,13 @@ export const planningsReducer = createReducer(
       const loadedLocationKeys = new Set(state.loadedLocationKeys);
       loadedLocationKeys.delete(locationId);
 
-      // Remove planning for this location
-      const planningToRemove = Object.values(state.entities).find(
-        (p) => p?.locationId === locationId
-      );
-
-      if (planningToRemove) {
-        return planningsAdapter.removeOne(planningToRemove.id, {
-          ...state,
-          loadedLocationKeys,
-        });
-      }
-
       return {
         ...state,
         loadedLocationKeys,
+        loadingByLocation: {
+          ...state.loadingByLocation,
+          [locationId]: false,
+        },
       };
     }
   )

@@ -24,8 +24,8 @@ export class PlanningsEffects {
               return action.locationId;
             }
             return null;
-          })
-        )
+          }),
+        ),
       ),
       mergeMap(([action, _]) => {
         const { locationId, month, year } = action;
@@ -58,21 +58,19 @@ export class PlanningsEffects {
                 PlanningsActions.loadPlanningFailure({
                   error: error.message || 'Failed to load planning',
                   locationId,
-                })
-              )
-            )
+                }),
+              ),
+            ),
           );
       }),
-      filter((action: any) => action.type !== 'NO_OP')
-    )
+      filter((action: any) => action.type !== 'NO_OP'),
+    ),
   );
 
   invalidatePlanning$ = createEffect(() =>
     this.actions$.pipe(
       ofType(PlanningsActions.invalidatePlanning),
-      mergeMap(({ locationId }) => [
-        AssignmentsActions.invalidateAssignments({ locationId }),
-      ])
-    )
+      mergeMap(({ locationId }) => [AssignmentsActions.invalidateAssignments({ locationId })]),
+    ),
   );
 }

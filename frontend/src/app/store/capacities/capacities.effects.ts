@@ -1,8 +1,11 @@
 import { inject, Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
+import { Store } from '@ngrx/store';
 import { of } from 'rxjs';
-import { catchError, map, switchMap, tap } from 'rxjs/operators';
+import { catchError, concatMap, map, switchMap, take } from 'rxjs/operators';
 import * as CapacitiesActions from './capacities.actions';
+import * as PlanningsActions from '../plannings/plannings.actions';
+import { selectPlanningById } from '@/app/store/plannings';
 import { MessageService } from 'primeng/api';
 import { PlannerService } from '@/app/services/planner.service';
 
@@ -11,6 +14,7 @@ export class CapacitiesEffects {
   private actions$ = inject(Actions);
   private planningService = inject(PlannerService);
   private messageService = inject(MessageService);
+  private store = inject(Store);
 
   loadCapacitiesByPlanningAndLocation$ = createEffect(() =>
     this.actions$.pipe(
@@ -70,18 +74,42 @@ export class CapacitiesEffects {
     ),
   );
 
-  createCapacitiesByPlanningIdSuccess$ = createEffect(
-    () =>
-      this.actions$.pipe(
-        ofType(CapacitiesActions.createCapacitiesByPlanningIdSuccess),
-        tap(() => {
-          this.messageService.add({
-            severity: 'success',
-            summary: 'Success',
-            detail: 'Capacities created successfully',
-          });
-        }),
+  createCapacitiesByPlanningIdSuccess$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(CapacitiesActions.createCapacitiesByPlanningIdSuccess),
+      concatMap((action) =>
+        this.store.select(selectPlanningById(action.planningId)).pipe(
+          take(1),
+          map((planning) => ({ action, planning })),
+        ),
       ),
-    { dispatch: false },
+      concatMap(({ action, planning }) => {
+        const { locationId } = action;
+
+        const actions: any[] = [
+          // Invalidate the planning to allow refetching
+          PlanningsActions.invalidatePlanning({ locationId }),
+        ];
+
+        // If we have the planning data, dispatch loadPlanning to refetch
+        if (planning) {
+          actions.push(
+            PlanningsActions.loadPlanning({
+              locationId,
+              month: planning.month,
+              year: planning.year,
+            }),
+          );
+        }
+
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Success',
+          detail: 'Capacities created successfully',
+        });
+
+        return actions;
+      }),
+    ),
   );
 }
